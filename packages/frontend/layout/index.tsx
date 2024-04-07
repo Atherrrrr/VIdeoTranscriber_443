@@ -89,7 +89,7 @@ export default function Layout(props: LayoutProps) {
           onClick={logout}
         >
           <Tooltip title="Logout" arrow>
-            <LogoutIcon style={{ fill: "theme.palette.error.light" }} />
+            <LogoutIcon style={{ fill: "#FFF" }} />
           </Tooltip>
         </Fab>
       )}

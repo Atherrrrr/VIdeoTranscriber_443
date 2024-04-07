@@ -27,6 +27,7 @@ import AutorenewOutlinedIcon from "@mui/icons-material/AutorenewOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import { circularProgressClasses } from "@mui/material/CircularProgress";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { useRouter } from "next/router";
 
 interface SessionData {
   name: string;
@@ -59,8 +60,9 @@ const ProgressContainer = styled("div")(({ theme }) => ({
 const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) => {
   // Function to render action buttons
   const theme = useTheme();
+  const router = useRouter();
 
-  const renderActions = () => (
+  const renderActions = (status: string) => (
     <>
       <Tooltip title="Edit" placement="top" arrow>
         <IconButton onClick={() => console.log("Edit")}>
@@ -73,8 +75,11 @@ const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) =
         </IconButton>
       </Tooltip>
       <Tooltip title="View" placement="top" arrow>
-        <IconButton onClick={() => console.log("View")}>
-          <VisibilityOutlinedIcon sx={{ fill: "#17C964" }} />
+        <IconButton
+          onClick={() => router.push(`/video`)}
+          disabled={status === "Processing"} // Disable button if status is "Processing"
+        >
+          <VisibilityOutlinedIcon sx={{ fill: status === "Processing" ? "#ccc" : "#17C964" }} />
         </IconButton>
       </Tooltip>
     </>
@@ -172,7 +177,7 @@ const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) =
                       />
                     )}
                   </TableCell>
-                  <TableCell align="center">{renderActions()}</TableCell>
+                  <TableCell align="center">{renderActions(session.status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

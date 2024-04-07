@@ -30,9 +30,9 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 interface SessionData {
   name: string;
-  role: string;
+  fileType: string;
+  time: string;
   date: string;
-  avgScore: number;
   status: string;
   duration: string;
 }
@@ -103,11 +103,9 @@ const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) =
                 {/* Apply a grey background to header cells */}
                 <TableCell sx={{ bgcolor: theme.palette.info.main }}></TableCell>
                 <TableCell sx={{ bgcolor: theme.palette.info.main }}>Name</TableCell>
-                <TableCell sx={{ bgcolor: theme.palette.info.main }}>Role</TableCell>
-                <TableCell sx={{ bgcolor: theme.palette.info.main }}>Date</TableCell>
-                <TableCell sx={{ bgcolor: theme.palette.info.main }} align="center">
-                  Avg Score
-                </TableCell>
+                <TableCell sx={{ bgcolor: theme.palette.info.main }}>File Format</TableCell>
+                <TableCell sx={{ bgcolor: theme.palette.info.main }}>Upload Time</TableCell>
+                <TableCell sx={{ bgcolor: theme.palette.info.main }}>Upload Date</TableCell>
                 <TableCell sx={{ bgcolor: theme.palette.info.main }}>Status</TableCell>
                 <TableCell sx={{ bgcolor: theme.palette.info.main }} align="center">
                   Action
@@ -144,47 +142,9 @@ const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) =
                     </Box>
                   </TableCell>
                   <TableCell>{session.name}</TableCell>
-                  <TableCell>{session.role}</TableCell>
+                  <TableCell>{session.fileType}</TableCell>
+                  <TableCell>{session.time}</TableCell>
                   <TableCell>{session.date}</TableCell>
-                  <TableCell align="center">
-                    <ProgressContainer>
-                      {session.status !== "Processing" && (
-                        <ProgressLabel
-                          variant="subtitle2"
-                          score={session.avgScore}
-                        >{`${session.avgScore}%`}</ProgressLabel>
-                      )}
-                      <CircularProgress
-                        variant="determinate"
-                        value={100} // This creates a full circle
-                        size={65}
-                        thickness={4}
-                        sx={{
-                          position: "absolute",
-                          [`& .${circularProgressClasses.circle}`]: {
-                            strokeLinecap: "round",
-                            stroke: theme.palette.text.disabled,
-                          },
-                        }}
-                      />
-                      {session.status !== "Processing" && (
-                        <CircularProgress
-                          variant="determinate"
-                          value={session.avgScore} // Assuming semi-circle effect is needed, multiply by 2
-                          size={65}
-                          thickness={4}
-                          sx={{
-                            borderRadius: "50%",
-                            transform: "rotate(-90deg)",
-                            [`& .${circularProgressClasses.circle}`]: {
-                              strokeLinecap: "round",
-                              stroke: getColorForProgressScore(session.avgScore), // Dynamic color for the progress bar
-                            },
-                          }}
-                        />
-                      )}
-                    </ProgressContainer>
-                  </TableCell>
                   <TableCell>
                     {session.status === "Processing" ? (
                       <Chip

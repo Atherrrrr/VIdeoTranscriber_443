@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import { Provider as StoreProvider } from "jotai";
 import { EmotionCache } from "@emotion/react";
 import Layout from "@/layout";
-import ProtectedRoute from "@/auth_rowaha";
+import ProtectedRoute from "@/auth";
 import React from "react";
 import { Amplify } from "aws-amplify";
 import { FC } from "react";

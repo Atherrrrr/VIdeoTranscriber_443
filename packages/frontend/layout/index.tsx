@@ -17,7 +17,7 @@ import {
   Paper,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { IconMessageReport } from "@tabler/icons-react";
 import LightDarkSwitchBtn from "@/components/shared/LightDarkSwitchBtn";
 import { snackbarAtom, snackbarMessage, snackbarSeverity, useSnackbar } from "@/store/snackbar";
@@ -42,8 +42,8 @@ const PageContainer = ({ children, theme }) => (
   <Box
     sx={{
       paddingTop: 12, // Adjust based on AppBar height
-      paddingLeft: { sm: 35 }, // Adjust based on Sidebar width
-      paddingRight: 3,
+      paddingLeft: 8,
+      paddingRight: 8,
       paddingBottom: 3,
       backgroundColor: theme.palette.background.default,
     }}
@@ -69,23 +69,27 @@ export default function Layout(props: LayoutProps) {
   const currentURL = router.asPath;
 
   const goToAccount = () => {
-    router.push(`/account`); // Assuming your `page` values in menuItems are valid paths
+    router.push(`/account`);
+  };
+
+  const logout = () => {
+    router.push(`/login`);
   };
 
   return (
     <>
       {true && (
         <Fab
-          color="primary"
+          color="error"
           sx={{
             position: "absolute",
-            right: 25,
-            bottom: 25,
+            right: 20,
+            bottom: 20,
           }}
-          onClick={() => router.replace("/inbox")}
+          onClick={logout}
         >
-          <Tooltip title="Report" arrow>
-            <IconMessageReport color="white" />
+          <Tooltip title="Logout" arrow>
+            <LogoutIcon style={{ fill: "theme.palette.error.light" }} />
           </Tooltip>
         </Fab>
       )}
@@ -149,17 +153,6 @@ export default function Layout(props: LayoutProps) {
                   gap: 1,
                 }}
               >
-                <Link href={"/product/post"}>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    sx={{ textTransform: "none", height: "fit-content" }}
-                    startIcon={<PlayCircle style={{ fill: "#fff" }} />}
-                  >
-                    Start New Practice Session
-                  </Button>
-                </Link>
-
                 <IconButton size="small">
                   <NotificationsOutlined style={{ fill: theme.palette.primary.main }} />
                 </IconButton>
@@ -167,14 +160,12 @@ export default function Layout(props: LayoutProps) {
                   <Avatar src={"/user-avatar.svg"} />
                 </Box>
                 <Typography variant="subtitle2" color={theme.palette.primary.main}>
-                  Faaiz Khan
+                  Maher Athar
                 </Typography>
                 <LightDarkSwitchBtn />
               </Grid>
             </Grid>
           </AppBar>
-
-          <SideBar />
         </div>
       )}
       <PageContainer children={props.children} theme={theme}>

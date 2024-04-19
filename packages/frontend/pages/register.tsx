@@ -15,7 +15,6 @@ import { FilledInputField, DomainImage } from "@/components/shared";
 import { BACKEND_URL, REGISTER_BILKENTEER } from "@/routes";
 import { useRouter } from "next/router";
 import { flushSync } from "react-dom";
-import Auth from "aws-amplify";
 import { LogoImage } from "@/components/shared/LogoImage";
 
 const RegisterStack = styled(Stack)(({ theme }) => ({
@@ -77,22 +76,23 @@ export default function RegisterPage() {
         }),
       });
 
-      try {
-        const result = await Auth.Amplify.({
-          username: email,
-          password: password,
-          // if custom attribute is added
-          attributes: {
-            "custom:role": "user",
-          },
-        });
-        return result;
-      } catch (error) {
-        console.error("Error registering user:", error);
-      }
-      console.log("User registered:", user);
+      // try {
+      //   const result = await Auth.Amplify.({
+      //     username: email,
+      //     password: password,
+      //     // if custom attribute is added
+      //     attributes: {
+      //       "custom:role": "user",
+      //     },
+      //   });
+      //   return result;
+      // } catch (error) {
+      //   console.error("Error registering user:", error);
+      // }
+      // console.log("User registered:", user);
 
-      const data = await res.json();
+      // const data = await res.json();
+      const data = undefined;
       if (data.hasOwnProperty("token")) {
         // do not store this accessToken, redirect to login
         snackbar("success", "Account Created");
@@ -145,7 +145,7 @@ export default function RegisterPage() {
         </div>
       )}
       <RegisterStack gap={2}>
-        <LogoImage/>
+        <LogoImage />
         <Grid container gap={0.5} justifyContent="space-between">
           <Grid item xs={5.75} style={{ margin: "5px" }}>
             <FilledInputField

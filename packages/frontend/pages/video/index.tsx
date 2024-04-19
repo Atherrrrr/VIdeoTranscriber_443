@@ -1,5 +1,16 @@
-import React from "react";
-import { Grid, Paper, Typography, Box, useTheme, IconButton } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  useTheme,
+  IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { Movie, Subtitles, ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/router";
 
@@ -7,6 +18,7 @@ const VideoPage = () => {
   const theme = useTheme();
   const router = useRouter(); // Hook to control routing
   const videoSrc = "https://www.youtube.com/watch?v=iGsFCnJL6ko"; // Place your video URL here
+  const [language, setLanguage] = useState("English");
 
   const subtitles = [
     { time: "00:00:01", text: "Hello, welcome to our video!" },
@@ -27,6 +39,13 @@ const VideoPage = () => {
     { time: "00:03:15", text: "Stay tuned for more content." },
     // Add more subtitles as needed
   ];
+
+  // Function to handle language change
+  const changeLanguage = (event) => {
+    const newLanguage = event.target.value;
+    setLanguage(newLanguage);
+    console.log("Language changed to:", newLanguage);
+  };
 
   return (
     <>
@@ -64,9 +83,25 @@ const VideoPage = () => {
             </Box>
           </Grid>
           <Grid item xs={12} md={4}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel id="language-select-label">Subtitle Language</InputLabel>
+              <Select
+                labelId="language-select-label"
+                id="language-select"
+                value={language}
+                label="Subtitle Language"
+                onChange={changeLanguage}
+              >
+                <MenuItem value="English">English</MenuItem>
+                <MenuItem value="Turkish">Turkish</MenuItem>
+                <MenuItem value="Arabic">Arabic</MenuItem>
+                <MenuItem value="German">German</MenuItem>
+                <MenuItem value="French">French</MenuItem>
+              </Select>
+            </FormControl>
             <Paper
               elevation={3}
-              sx={{ maxHeight: 600, overflow: "auto", padding: theme.spacing(2) }}
+              sx={{ maxHeight: 500, overflow: "auto", padding: theme.spacing(2) }}
             >
               <Typography variant="h6" gutterBottom>
                 <Subtitles sx={{ mr: 1, verticalAlign: "bottom" }} />

@@ -10,6 +10,7 @@ import { FC } from "react";
 import PageProvider from "@/components/layout/PageProvider";
 import awsconfig from "@/src/amplifyconfiguration.json";
 import AuthContext from "@/utils/AuthContext";
+import { BrowserRouter } from "react-router-dom";
 // import AuthContext from "../context/AuthContext";
 
 Amplify.configure({ ...awsconfig });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 // import VideoView from "@/components/PracticeSession/VideoView";
@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import PracticeSessionsTable from "@/components/Tables/PracticeSessionsTable";
 import { PlayCircle } from "@mui/icons-material";
+import { useRouter } from "next/router";
 
 const sessionData = [
   {
@@ -99,17 +100,63 @@ const sessionData = [
   },
 ];
 
-export default function PracticeSession() {
+export default function dashboard() {
   const [open, setOpen] = useState(false);
   const [videoName, setVideoName] = useState("");
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false); // New state for managing upload state
   const theme = useTheme(); // Access theme
 
+  const router = useRouter();
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleVideoNameChange = (event) => setVideoName(event.target.value);
   const handleFileChange = (event) => setFile(event.target.files[0]);
+
+  useEffect(() => {
+    const getHashParams = (hash) => {
+      const hashParams = new URLSearchParams(hash.slice(1));
+      return {
+        accessToken: hashParams.get("access_token"),
+      };
+    };
+
+    const fetchUserInfo = async (accessToken) => {
+      try {
+        const response = await fetch(
+          "https://tdorohoz1e.execute-api.us-east-1.amazonaws.com/test/user/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: accessToken, // Set the Authorization header with the access token
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("User Info:", data); // Process or update state with the fetched data
+      } catch (error) {
+        console.error("Fetching user info failed:", error.message);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      const { accessToken } = getHashParams(hash);
+
+      console.log("accessToken = ", accessToken);
+
+      if (accessToken) {
+        fetchUserInfo(accessToken); // Make the API call with the access token
+      } else {
+        console.error("No access token available.");
+      }
+    }
+  }, []);
 
   const style = {
     position: "absolute",
@@ -118,7 +165,7 @@ export default function PracticeSession() {
     transform: "translate(-50%, -50%)",
     width: 500, // Increased width
     height: 300, // Increased height
-    bgcolor: theme.palette.background.default, // Use theme's default background color
+    bgcolor: theme.palette.background.default,
     boxShadow: 24,
     p: 4,
     display: "flex",
@@ -131,9 +178,9 @@ export default function PracticeSession() {
     // Simulate a file upload
     setTimeout(() => {
       console.log(videoName, file);
-      setIsUploading(false); // Reset upload state
-      handleClose(); // Close modal after "upload"
-    }, 5000); // Simulate upload time
+      setIsUploading(false);
+      handleClose();
+    }, 5000);
   };
 
   return (

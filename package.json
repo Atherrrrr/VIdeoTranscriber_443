@@ -1,8 +1,9 @@
 {
-  "name": "weprep.web-turborepo",
+  "name": "scriptify.web-turborepo",
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:frontend": "turbo build --filter=frontend",
     "dev": "dotenv -- turbo dev",
     "dev:admin": "dotenv -- turbo dev --filter admin-frontend",
     "dev:app": "dotenv -- turbo dev --filter frontend",

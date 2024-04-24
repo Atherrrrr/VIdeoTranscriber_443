@@ -11,5 +11,18 @@
       "StackId": "arn:aws:cloudformation:eu-north-1:339712735409:stack/amplify-scriptify-dev-02777/15652b70-fe73-11ee-8a83-06541e3f4b87",
       "AmplifyAppId": "d3gvorrcsd7qoy"
     }
+  },
+  "master": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-scriptify-master-5460b-authRole",
+      "UnauthRoleArn": "arn:aws:iam::339712735409:role/amplify-scriptify-master-5460b-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::339712735409:role/amplify-scriptify-master-5460b-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-scriptify-master-5460b-deployment",
+      "UnauthRoleName": "amplify-scriptify-master-5460b-unauthRole",
+      "StackName": "amplify-scriptify-master-5460b",
+      "StackId": "arn:aws:cloudformation:us-east-1:339712735409:stack/amplify-scriptify-master-5460b/e788ce50-fe77-11ee-b1cd-0affde21ad8b",
+      "AmplifyAppId": "d29hjqegg89yv"
+    }
   }
 }

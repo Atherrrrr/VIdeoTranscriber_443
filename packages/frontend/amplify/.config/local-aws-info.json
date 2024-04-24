@@ -3,5 +3,10 @@
     "configLevel": "project",
     "useProfile": true,
     "profileName": "cloud-proj"
+  },
+  "master": {
+    "configLevel": "project",
+    "useProfile": false,
+    "awsConfigFilePath": "C:\\Users\\ather\\.amplify\\awscloudformation\\uCwqn36S3W"
   }
 }

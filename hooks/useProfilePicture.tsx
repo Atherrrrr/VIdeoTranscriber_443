@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useAtom } from "jotai";
-import { PROFILE_PICTURE, BACKEND_URL } from "@/routes";
-import { currentUserAtom } from "@/auth";
+import { PROFILE_PICTURE, BACKEND_URL } from "../routes";
+import { currentUserAtom } from "../auth";
 
 export default function useProfilePicture() {
   const [currentUser] = useAtom(currentUserAtom);

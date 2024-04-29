@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import type { RequestMethod, S3Route } from "./types";
-import { BACKEND_URL } from "@/routes";
-import { AUTH_TOKEN } from "@/auth";
+import { BACKEND_URL } from "../routes";
+import { AUTH_TOKEN } from "../auth";
 
 export function useImageUpload<R, E>(
   auth: boolean,

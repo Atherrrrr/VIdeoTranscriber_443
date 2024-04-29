@@ -14,11 +14,10 @@ import {
 import { styled } from "@mui/system";
 
 import { useSnackbar } from "@/store/snackbar";
-import { AUTH_TOKEN, authAtom, currentUserAtom } from "@/auth";
+import { AUTH_TOKEN, authAtom, currentUserAtom } from "../auth";
 
 import { FilledInputField } from "@/components/shared";
 import { LogoImage } from "@/components/shared/LogoImage";
-import { BACKEND_URL, LOGIN_BILKENTEER, LOGIN_MODERATOR } from "@/routes";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { flushSync } from "react-dom";

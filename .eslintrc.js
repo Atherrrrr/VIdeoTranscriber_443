@@ -32,7 +32,7 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     // ESLint rule for unused vars
     "no-unused-vars": "off", // Disable the base rule as it can report incorrect errors for TS projects
-    "@typescript-eslint/no-explicit-any": "off",
+    // "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

@@ -14,10 +14,13 @@ export const useSnackbar = () => {
   const [, setSnackbar] = useAtom(snackbarAtom);
   const [, setSeverity] = useAtom(snackbarSeverity);
   const [, setMessage] = useAtom(snackbarMessage);
-  const showSnackbar = React.useCallback((severity: SnackbarSeverity, message: string) => {
-    setSnackbar(true);
-    setSeverity(severity);
-    setMessage(message);
-  }, []);
+  const showSnackbar = React.useCallback(
+    (severity: SnackbarSeverity, message: string) => {
+      setSnackbar(true);
+      setSeverity(severity);
+      setMessage(message);
+    },
+    [setSnackbar, setSeverity, setMessage]
+  );
   return showSnackbar;
 };

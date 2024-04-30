@@ -153,7 +153,7 @@ export default function ProtectedRoute(props: ProtectedRouteProps) {
       }
     };
     validateToken();
-  }, []);
+  }, [router, setAuthToken, setCurrentUser, setLoginRedirect, snackbar]);
 
   if (!authorized) {
     return (

@@ -160,9 +160,7 @@ export default function Layout(props: LayoutProps) {
           </AppBar>
         </div>
       )}
-      <PageContainer children={props.children} theme={theme}>
-        {/* {props.children} */}
-      </PageContainer>
+      <PageContainer theme={theme}>{props.children}</PageContainer>
     </>
   );
 }

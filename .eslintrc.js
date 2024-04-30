@@ -5,8 +5,10 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended", // Ensure TypeScript-specific rules are enabled
+    "plugin:@typescript-eslint/recommended",
     "prettier",
+    "next",
+    "next/core-web-vitals",
   ],
   overrides: [
     {

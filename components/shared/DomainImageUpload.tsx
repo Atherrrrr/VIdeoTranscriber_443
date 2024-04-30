@@ -110,7 +110,7 @@ export function DomainImageUpload(props: DomainImageUploadProps) {
     if (imgBlob && croppedImgUrl && !cropping) {
       props.onImageFinal(croppedImgUrl, imgBlob);
     }
-  }, [imgBlob, croppedImgUrl, cropping]);
+  }, [imgBlob, croppedImgUrl, cropping, props]);
 
   return (
     <>

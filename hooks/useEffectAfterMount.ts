@@ -11,5 +11,5 @@ export function useEffectAfterMount(callback: () => any, arr: any[]) {
       console.log("on mount");
       didMountRef.current = true;
     }
-  }, arr);
+  }, [arr, callback]);
 }

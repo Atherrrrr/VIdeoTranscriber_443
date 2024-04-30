@@ -29,7 +29,7 @@ export default function useProfilePicture() {
 
   React.useEffect(() => {
     fetchProfilePicture();
-  }, [currentUser]);
+  }, [currentUser, fetchProfilePicture]);
 
   return [profileImgSrc, fetchProfilePicture] as const;
 }

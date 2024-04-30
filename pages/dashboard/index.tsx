@@ -100,8 +100,8 @@ const sessionData = [
   },
 ];
 
-export default function dashboard() {
-  const [open, setOpen] = useState(false);
+const DashboardPage = () => {
+  const [open, setOpen] = React.useState(false);
   const [videoName, setVideoName] = useState("");
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false); // New state for managing upload state
@@ -263,4 +263,6 @@ export default function dashboard() {
       <PracticeSessionsTable data={sessionData} />
     </>
   );
-}
+};
+
+export default DashboardPage;

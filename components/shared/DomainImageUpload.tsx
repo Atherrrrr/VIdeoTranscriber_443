@@ -190,7 +190,6 @@ export function DomainImageUpload(props: DomainImageUploadProps) {
               style={{ display: "none" }}
               type="file"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                // @ts-expect-error description
                 // props.onImageSelect(event.target.files);
                 handleOnImgSelect(event.target.files);
               }}

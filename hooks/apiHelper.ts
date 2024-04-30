@@ -17,7 +17,9 @@ const _handleError = async (response: any) => {
     let errorData;
     try {
       errorData = await response.json();
-    } catch {}
+    } catch {
+      console.log("Error");
+    }
 
     if (errorData?.meta) {
       snackbar("error", `${errorData.meta?.code}:${errorData.meta?.message}`);

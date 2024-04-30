@@ -11,16 +11,13 @@ export const snackbarMessage = atom<string>("");
 
 // snackbar show hook
 export const useSnackbar = () => {
-  const [_, setSnackbar] = useAtom(snackbarAtom);
-  const [__, setSeverity] = useAtom(snackbarSeverity);
-  const [___, setMessage] = useAtom(snackbarMessage);
-  const showSnackbar = React.useCallback(
-    (severity: SnackbarSeverity, message: string) => {
-      setSnackbar(true);
-      setSeverity(severity);
-      setMessage(message);
-    },
-    [],
-  );
+  const [, setSnackbar] = useAtom(snackbarAtom);
+  const [, setSeverity] = useAtom(snackbarSeverity);
+  const [, setMessage] = useAtom(snackbarMessage);
+  const showSnackbar = React.useCallback((severity: SnackbarSeverity, message: string) => {
+    setSnackbar(true);
+    setSeverity(severity);
+    setMessage(message);
+  }, []);
   return showSnackbar;
 };

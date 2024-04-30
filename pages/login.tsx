@@ -13,15 +13,15 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-import { useSnackbar } from "@/store/snackbar";
-import { authAtom, currentUserAtom } from "../auth";
+// import { useSnackbar } from "@/store/snackbar";
+// import { authAtom, currentUserAtom } from "../auth";
 
 import { FilledInputField } from "@/components/shared";
 import { LogoImage } from "@/components/shared/LogoImage";
-import { useAtom } from "jotai";
+// import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { flushSync } from "react-dom";
-import loginRedirectAtom from "@/store/loginredirect";
+// import loginRedirectAtom from "@/store/loginredirect";
 
 const LoginStack = styled(Stack)(({ theme }) => ({
   background: theme.palette.background.default,
@@ -40,15 +40,15 @@ export default function LoginPage() {
   const router = useRouter();
   const theme = useTheme();
 
-  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token, setToken] = useAtom(authAtom);
-  const [loginRedirect] = useAtom(loginRedirectAtom);
+  // const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  // const [token, setToken] = useAtom(authAtom);
+  // const [loginRedirect] = useAtom(loginRedirectAtom);
 
   const [email, setEmail] = React.useState<string>("e");
   const [password, setPassword] = React.useState<string>("e");
   const [loggingIn, setLoggingIn] = React.useState<boolean>(false);
 
-  const snackbar = useSnackbar();
+  // const snackbar = useSnackbar();
 
   React.useEffect(() => {
     setEmail("");
@@ -56,7 +56,7 @@ export default function LoginPage() {
     setLoggingIn(false);
   }, []);
 
-  const handleLogin = async (loginType: "bilkenteer" | "moderator") => {
+  const handleLogin = async () => {
     flushSync(() => setLoggingIn(true));
     router.replace("/dashboard");
     // const loginUrl =

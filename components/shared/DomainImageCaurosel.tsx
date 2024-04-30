@@ -17,7 +17,7 @@ export function DomainImageCaurosel(props: DomainImageCauroselProps) {
     <Caurosel
       NavButton={({ onClick, style, next }) => {
         return (
-          // @ts-ignore
+          //@ts-expect-error dsadas
           <Button
             onClick={onClick}
             size="small"

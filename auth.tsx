@@ -29,51 +29,51 @@ export type User = {
 export const currentUserAtom = atom<User | null>(null);
 
 export const useCurrentUserWithValidation = () => {
-  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const snackbar = useSnackbar();
+  const [currentUser] = useAtom(currentUserAtom);
+  // const snackbar = useSnackbar();
   React.useLayoutEffect(() => {
-    let storedToken = localStorage.getItem(AUTH_TOKEN);
-    if (!storedToken) {
-      snackbar("warning", "Session was expired");
-      setCurrentUser(null);
-      return;
-    }
-    //localstorage has an underlying token
-    const validateToken = async () => {
-      try {
-        const res = await fetch(`${BACKEND_URL}${VALIDATE_TOKEN}`, {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        });
-        if (res.status != 200) {
-          throw new AuthError("Session was expired");
-        }
-        const data = await res.json();
-        if (data.hasOwnProperty("uuid")) {
-          setCurrentUser(() => {
-            const user = { ...data };
-            delete user["token"];
-            return user;
-          });
-          return;
-        } else if ("errors" in data) {
-          throw new AuthError(data["errors"][0]);
-        } else {
-          throw new Error();
-        }
-      } catch (err) {
-        if (err instanceof AuthError) {
-          snackbar("error", (err as Error).message);
-        } else {
-          snackbar("error", "Unknown Error Occured");
-        }
-        console.error(err);
-        setCurrentUser(null);
-        localStorage.removeItem(AUTH_TOKEN);
-      }
-    };
-    validateToken();
+    // const storedToken = localStorage.getItem(AUTH_TOKEN);
+    // if (!storedToken) {
+    //   snackbar("warning", "Session was expired");
+    //   setCurrentUser(null);
+    //   return;
+    // }
+    // //localstorage has an underlying token
+    // const validateToken = async () => {
+    //   try {
+    //     const res = await fetch(`${BACKEND_URL}${VALIDATE_TOKEN}`, {
+    //       headers: {
+    //         Authorization: `Bearer ${storedToken}`,
+    //       },
+    //     });
+    //     if (res.status != 200) {
+    //       throw new AuthError("Session was expired");
+    //     }
+    //     const data = await res.json();
+    //     if (data.hasOwnProperty("uuid")) {
+    //       setCurrentUser(() => {
+    //         const user = { ...data };
+    //         delete user["token"];
+    //         return user;
+    //       });
+    //       return;
+    //     } else if ("errors" in data) {
+    //       throw new AuthError(data["errors"][0]);
+    //     } else {
+    //       throw new Error();
+    //     }
+    //   } catch (err) {
+    //     if (err instanceof AuthError) {
+    //       snackbar("error", (err as Error).message);
+    //     } else {
+    //       snackbar("error", "Unknown Error Occured");
+    //     }
+    //     console.error(err);
+    //     setCurrentUser(null);
+    //     localStorage.removeItem(AUTH_TOKEN);
+    //   }
+    // };
+    // validateToken();
   }, []);
 
   return currentUser;
@@ -92,15 +92,14 @@ export default function ProtectedRoute(props: ProtectedRouteProps) {
   const snackbar = useSnackbar();
   const [authorized, setAuthorized] = React.useState<boolean>(false);
 
-  const [_, setLoginRedirect] = useAtom(loginRedirectAtom);
-  const [__, setAuthToken] = useAtom(authAtom);
-  const [___, setCurrentUser] = useAtom(currentUserAtom);
-
+  const [, setLoginRedirect] = useAtom(loginRedirectAtom);
+  const [, setAuthToken] = useAtom(authAtom);
+  const [, setCurrentUser] = useAtom(currentUserAtom);
   const router = useRouter();
 
   React.useLayoutEffect(() => {
     flushSync(() => setAuthorized(false));
-    let storedToken = localStorage.getItem(AUTH_TOKEN);
+    const storedToken = localStorage.getItem(AUTH_TOKEN);
     if (!storedToken) {
       snackbar("error", "Login Required");
       setLoginRedirect(router.asPath);
@@ -121,7 +120,7 @@ export default function ProtectedRoute(props: ProtectedRouteProps) {
           throw new AuthError("Login Required");
         }
         const data = await res.json();
-        if (data.hasOwnProperty("uuid")) {
+        if (data.uuid) {
           setCurrentUser(() => {
             const user = { ...data };
             delete user["token"];

@@ -5,7 +5,7 @@ import { CircularProgress, useTheme } from "@mui/material";
 import { styled } from "@mui/material";
 import { IThemeMode } from "@/theme/types";
 
-const StyledImage = styled(Image)<{}>((props) => ({
+const StyledImage = styled(Image)(() => ({
   width: "100%",
   height: "100%",
 }));

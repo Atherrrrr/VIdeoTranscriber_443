@@ -54,7 +54,7 @@ const LightDarkSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function LightDarkSwitchBtn() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const toggleColorMode = () => {
     setTheme(theme === IThemeMode.LIGHT ? IThemeMode.DARK : IThemeMode.LIGHT);
@@ -63,13 +63,7 @@ export default function LightDarkSwitchBtn() {
   return (
     <FormGroup>
       <FormControlLabel
-        control={
-          <LightDarkSwitch
-            sx={{ m: 1 }}
-            defaultChecked
-            onChange={toggleColorMode}
-          />
-        }
+        control={<LightDarkSwitch sx={{ m: 1 }} defaultChecked onChange={toggleColorMode} />}
         label=""
       />
     </FormGroup>

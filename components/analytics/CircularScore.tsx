@@ -4,7 +4,6 @@ import Tooltip from "@mui/material/Tooltip";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CircularProgress, { circularProgressClasses } from "@mui/material/CircularProgress";
 import { Box, IconButton, styled, useTheme } from "@mui/material";
-import { grey } from "@mui/material/colors";
 
 interface CircularScoreProps {
   label: string;
@@ -23,7 +22,7 @@ const CircularScore: React.FC<CircularScoreProps> = ({ label, toolTipInfo, progr
     return "#F31260";
   };
 
-  const Root = styled("div")(({ theme }) => ({
+  const Root = styled("div")(() => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -44,7 +43,7 @@ const CircularScore: React.FC<CircularScoreProps> = ({ label, toolTipInfo, progr
     },
   }));
 
-  const ProgressLabel = styled(Typography)(({ theme }) => ({
+  const ProgressLabel = styled(Typography)(() => ({
     position: "absolute",
     zIndex: 1,
     color: getColorForProgressScore(progressScore), // Dynamic color for the text

@@ -11,7 +11,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { Movie, Subtitles, ArrowBack } from "@mui/icons-material";
+import { Subtitles, ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/router";
 
 const VideoPage = () => {

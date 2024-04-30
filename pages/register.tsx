@@ -1,19 +1,11 @@
 import Link from "next/link";
 import * as React from "react";
-import {
-  Stack,
-  Grid,
-  useTheme,
-  Button,
-  ButtonGroup,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { Stack, Grid, useTheme, Button, Typography, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import { useSnackbar } from "@/store/snackbar";
-import { FilledInputField, DomainImage } from "@/components/shared";
-import { BACKEND_URL, REGISTER_BILKENTEER } from "@/routes";
-import { useRouter } from "next/router";
+import { FilledInputField } from "@/components/shared";
+import { BACKEND_URL, REGISTER_BILKENTEER } from "../routes";
+// import { useRouter } from "next/router";
 import { flushSync } from "react-dom";
 import { LogoImage } from "@/components/shared/LogoImage";
 
@@ -30,17 +22,17 @@ const RegisterStack = styled(Stack)(({ theme }) => ({
   border: `1px solid ${theme.palette.primary.main}`,
 }));
 
-type User = {
-  email: string;
-  password: string;
-};
+// type User = {
+//   email: string;
+//   password: string;
+// };
 
 export default function RegisterPage() {
   /** a successful registration request will ignore the generated JWT
    * and instead redirect to login page
    */
 
-  const router = useRouter();
+  // const router = useRouter();
   const theme = useTheme();
   const [firstname, setFirstname] = React.useState<string>("");
   const [lastname, setLastname] = React.useState<string>("");
@@ -76,6 +68,8 @@ export default function RegisterPage() {
         }),
       });
 
+      return res;
+
       // try {
       //   const result = await Auth.Amplify.({
       //     username: email,
@@ -92,16 +86,16 @@ export default function RegisterPage() {
       // console.log("User registered:", user);
 
       // const data = await res.json();
-      const data = undefined;
-      if (data.hasOwnProperty("token")) {
-        // do not store this accessToken, redirect to login
-        snackbar("success", "Account Created");
-        router.replace("/login");
-      } else if ("errors" in data) {
-        throw new Error(data["errors"][0]);
-      } else {
-        throw new Error("Internal Server Error");
-      }
+      // const data = undefined;
+      // if (data.token) {
+      //   // do not store this accessToken, redirect to login
+      //   snackbar("success", "Account Created");
+      //   router.replace("/login");
+      // } else if ("errors" in data) {
+      //   throw new Error(data["errors"][0]);
+      // } else {
+      //   throw new Error("Internal Server Error");
+      // }
     } catch (err: unknown) {
       snackbar("error", (err as Error).message);
     } finally {

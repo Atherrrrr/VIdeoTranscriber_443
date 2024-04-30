@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Skeleton from "@mui/material/Skeleton";
-import Stack from "@mui/material/Stack";
+// import Skeleton from "@mui/material/Skeleton";
+// import Stack from "@mui/material/Stack";
 // import VideoView from "@/components/PracticeSession/VideoView";
 import {
   Box,
@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import PracticeSessionsTable from "@/components/Tables/PracticeSessionsTable";
 import { PlayCircle } from "@mui/icons-material";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 
 const sessionData = [
   {
@@ -107,7 +107,7 @@ export default function dashboard() {
   const [isUploading, setIsUploading] = useState(false); // New state for managing upload state
   const theme = useTheme(); // Access theme
 
-  const router = useRouter();
+  // const router = useRouter();
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleVideoNameChange = (event) => setVideoName(event.target.value);

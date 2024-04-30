@@ -8,24 +8,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  CircularProgress,
   Tooltip,
   IconButton,
   Chip,
   useTheme,
-  CardMedia,
-  CardContent,
-  Card,
   Avatar,
   Box,
-  styled,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AutorenewOutlinedIcon from "@mui/icons-material/AutorenewOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
-import { circularProgressClasses } from "@mui/material/CircularProgress";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useRouter } from "next/router";
 
@@ -41,21 +34,6 @@ interface SessionData {
 interface PracticeSessionsTableProps {
   data: SessionData[];
 }
-
-const ProgressContainer = styled("div")(({ theme }) => ({
-  position: "relative",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginTop: theme.spacing(2),
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    width: "100%",
-    height: "50%",
-    bottom: 0,
-  },
-}));
 
 const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) => {
   // Function to render action buttons
@@ -84,19 +62,6 @@ const PracticeSessionsTable: React.FC<PracticeSessionsTableProps> = ({ data }) =
       </Tooltip>
     </>
   );
-
-  const getColorForProgressScore = (score: number): string => {
-    if (score >= 80) return "#17C964";
-    if (score >= 60) return "#C5E866";
-    if (score >= 40) return "#F5A524";
-    return "#F31260";
-  };
-
-  const ProgressLabel = styled(Typography)(({ theme, score }) => ({
-    position: "absolute",
-    zIndex: 1,
-    color: getColorForProgressScore(score), // Dynamic color for the text
-  }));
 
   return (
     <>

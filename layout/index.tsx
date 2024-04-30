@@ -1,4 +1,3 @@
-import Link from "next/link";
 import * as React from "react";
 import { useAtom } from "jotai";
 import {
@@ -11,22 +10,15 @@ import {
   Avatar,
   Tooltip,
   IconButton,
-  Button,
   Box,
   Typography,
-  Paper,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { IconMessageReport } from "@tabler/icons-react";
 import LightDarkSwitchBtn from "@/components/shared/LightDarkSwitchBtn";
-import { snackbarAtom, snackbarMessage, snackbarSeverity, useSnackbar } from "@/store/snackbar";
+import { snackbarAtom, snackbarMessage, snackbarSeverity } from "@/store/snackbar";
 import { useRouter } from "next/router";
-import { SignupIcon } from "@/icons";
-import useProfilePicture from "@/hooks/useProfilePicture";
-import { NotificationsOutlined, PlayCircle } from "@mui/icons-material";
+import { NotificationsOutlined } from "@mui/icons-material";
 import { IThemeMode } from "@/theme/types";
-import SideBar from "@/components/layout/Sidebar";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -56,14 +48,14 @@ export default function Layout(props: LayoutProps) {
   const theme = useTheme();
 
   // const [currentUser] = useAtom(currentUserAtom);
-  const currentUser = true;
-  const [profileImgSrc, refetch] = useProfilePicture();
+  // const currentUser = true;
+  // const [profileImgSrc, refetch] = useProfilePicture();
 
   const [snackbarStatus, setSnackbarStatus] = useAtom(snackbarAtom);
   const [severity] = useAtom(snackbarSeverity);
   const [message] = useAtom(snackbarMessage);
 
-  const snackbar = useSnackbar();
+  // const snackbar = useSnackbar();
 
   const router = useRouter();
   const currentURL = router.asPath;

@@ -26,6 +26,10 @@ interface PageContainerProps {
   theme: Theme;
 }
 
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
 const PageContainer: React.FC<PageContainerProps> = ({ children, theme }) => (
   <Box
     sx={{

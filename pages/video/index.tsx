@@ -1,5 +1,5 @@
-import type { ChangeEvent } from "react";
 import React, { useState } from "react";
+import type { SelectChangeEvent } from "@mui/material/Select";
 import {
   Grid,
   Paper,
@@ -42,7 +42,7 @@ const VideoPage: React.FC = (): JSX.Element => {
   ];
 
   // Function to handle language change
-  const changeLanguage = (event: ChangeEvent<HTMLSelectElement>) => {
+  const changeLanguage = (event: SelectChangeEvent<string>) => {
     const newLanguage = event.target.value;
     setLanguage(newLanguage);
     console.log("Language changed to:", newLanguage);

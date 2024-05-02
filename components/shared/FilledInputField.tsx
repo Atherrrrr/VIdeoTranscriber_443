@@ -33,7 +33,7 @@ const FilledTextField = styled(TextField)<FilledInputFieldStyles>((props) => ({
   width: "100%",
 }));
 
-function FilledInputField(props: FilledInputFieldProps): JSX.Element {
+export function FilledInputField(props: FilledInputFieldProps): JSX.Element {
   return (
     <FilledTextField
       error={props.error || false}
@@ -54,5 +54,3 @@ function FilledInputField(props: FilledInputFieldProps): JSX.Element {
     />
   );
 }
-
-export default FilledInputField;

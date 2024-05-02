@@ -10,7 +10,7 @@ const StyledImage = styled(Image)(() => ({
   height: "100%",
 }));
 
-const LogoImage: React.FC = (): JSX.Element => {
+export const LogoImage: React.FC = (): JSX.Element => {
   const theme = useTheme();
   const [imgLoaded, setImgLoaded] = useState<boolean>(false);
 
@@ -28,5 +28,3 @@ const LogoImage: React.FC = (): JSX.Element => {
     </>
   );
 };
-
-export default LogoImage;

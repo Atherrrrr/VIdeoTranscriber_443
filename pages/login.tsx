@@ -171,7 +171,7 @@ const LoginPage: React.FC = (): JSX.Element => {
 
           <ButtonGroup disabled={loggingIn} size="small" fullWidth variant="contained">
             <Button
-              onClick={() => handleLogin("bilkenteer")}
+              onClick={() => handleLogin()}
               sx={{
                 textTransform: "none",
               }}

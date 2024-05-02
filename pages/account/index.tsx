@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import React, { useState } from "react";
 import { Box, Button, Grid, TextField, Typography, IconButton, Avatar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,7 +23,7 @@ const AccountsPage: React.FC = (): JSX.Element => {
     setIsEditable(!isEditable);
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setProfile({ ...profile, [name]: value });
   };

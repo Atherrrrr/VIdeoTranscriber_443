@@ -3,7 +3,9 @@ import { useAtom } from "jotai";
 import { PROFILE_PICTURE, BACKEND_URL } from "../routes";
 import { currentUserAtom } from "../auth";
 
-export default function useProfilePicture() {
+type UseProfilePictureReturn = [string, () => Promise<void>];
+
+export default function useProfilePicture(): UseProfilePictureReturn {
   const [currentUser] = useAtom(currentUserAtom);
   const [profileImgSrc, setProfileImgSrc] = React.useState<string>("/blank-profile-picture.webp");
 

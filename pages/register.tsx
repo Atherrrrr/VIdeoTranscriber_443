@@ -27,7 +27,7 @@ const RegisterStack = styled(Stack)(({ theme }) => ({
 //   password: string;
 // };
 
-export default function RegisterPage() {
+const RegisterPage: React.FC = (): JSX.Element => {
   /** a successful registration request will ignore the generated JWT
    * and instead redirect to login page
    */
@@ -252,4 +252,6 @@ export default function RegisterPage() {
       </RegisterStack>
     </>
   );
-}
+};
+
+export default RegisterPage;

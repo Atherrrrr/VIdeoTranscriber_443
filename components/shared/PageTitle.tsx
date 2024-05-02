@@ -1,7 +1,11 @@
 import React from "react";
 import { Typography } from "@mui/material";
 
-export const PageTitle = ({ pageTitle }) => {
+interface PageTitleProps {
+  pageTitle: string;
+}
+
+const PageTitle: React.FC<PageTitleProps> = ({ pageTitle }) => {
   return (
     <Typography
       variant="h4"
@@ -24,3 +28,5 @@ export const PageTitle = ({ pageTitle }) => {
     </Typography>
   );
 };
+
+export default PageTitle;

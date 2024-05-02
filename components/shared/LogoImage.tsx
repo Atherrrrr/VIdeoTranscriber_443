@@ -10,7 +10,7 @@ const StyledImage = styled(Image)(() => ({
   height: "100%",
 }));
 
-export function LogoImage() {
+const LogoImage: React.FC = (): JSX.Element => {
   const theme = useTheme();
   const [imgLoaded, setImgLoaded] = useState<boolean>(false);
 
@@ -27,4 +27,6 @@ export function LogoImage() {
       {!imgLoaded && <CircularProgress size={80} thickness={3} color="secondary" />}
     </>
   );
-}
+};
+
+export default LogoImage;

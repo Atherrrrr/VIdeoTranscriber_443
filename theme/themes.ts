@@ -1,4 +1,5 @@
-import { Theme, createTheme } from "@mui/material";
+import type { Theme} from "@mui/material";
+import { createTheme } from "@mui/material";
 import { red, grey } from "@mui/material/colors";
 
 const commonTypography = {

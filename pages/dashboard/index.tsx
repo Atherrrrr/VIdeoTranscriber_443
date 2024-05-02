@@ -100,7 +100,7 @@ const sessionData = [
   },
 ];
 
-const DashboardPage = () => {
+const DashboardPage = (): React.ReactNode => {
   const [open, setOpen] = React.useState(false);
   const [videoName, setVideoName] = useState("");
   const [file, setFile] = useState(null);

@@ -1,11 +1,11 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Provider as StoreProvider } from "jotai";
-import { EmotionCache } from "@emotion/react";
+import type { EmotionCache } from "@emotion/react";
 import Layout from "../layout";
 import ProtectedRoute from "../auth";
 import React from "react";
-import { FC } from "react";
+import type { FC } from "react";
 import PageProvider from "@/components/layout/PageProvider";
 
 export interface MUIAppProps extends AppProps {

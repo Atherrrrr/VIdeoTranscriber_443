@@ -1,7 +1,8 @@
-import { CacheProvider, EmotionCache } from "@emotion/react";
+import type { EmotionCache } from "@emotion/react";
+import { CacheProvider } from "@emotion/react";
 import { ThemeProvider as PreferredThemeProvider } from "next-themes";
 import Head from "next/head";
-import { FC } from "react";
+import type { FC } from "react";
 import createEmotionCache from "../../theme/createEmotionCache";
 import MUIThemeProvider from "./MUIThemeProvider";
 

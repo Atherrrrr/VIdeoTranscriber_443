@@ -53,7 +53,7 @@ const LightDarkSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export default function LightDarkSwitchBtn() {
+export default function LightDarkSwitchBtn(): JSX.Element {
   const { theme, setTheme } = useTheme();
 
   const toggleColorMode = () => {

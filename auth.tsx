@@ -28,7 +28,7 @@ export type User = {
 
 export const currentUserAtom = atom<User | null>(null);
 
-export const useCurrentUserWithValidation = () => {
+export const useCurrentUserWithValidation = (): User | null => {
   const [currentUser] = useAtom(currentUserAtom);
   // const snackbar = useSnackbar();
   React.useLayoutEffect(() => {
@@ -86,7 +86,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export default function ProtectedRoute(props: ProtectedRouteProps) {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
   console.log("authing");
 
   const snackbar = useSnackbar();
@@ -178,4 +178,6 @@ export default function ProtectedRoute(props: ProtectedRouteProps) {
   }
 
   return <>{props.children}</>;
-}
+};
+
+export default ProtectedRoute;

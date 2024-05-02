@@ -60,7 +60,7 @@ export interface DomainImageUploadProps extends DropBoxStyleProps {
   justifyContent?: string;
 }
 
-export function DomainImageUpload(props: DomainImageUploadProps) {
+export const DomainImageUpload: React.FC<DomainImageUploadProps> = (props): JSX.Element => {
   const theme = useTheme();
 
   const [imgBlob, setImgBlob] = React.useState<Blob | null>(null);
@@ -249,4 +249,4 @@ export function DomainImageUpload(props: DomainImageUploadProps) {
       </Grid>
     </>
   );
-}
+};

@@ -1,23 +1,23 @@
 /**
  * AMS Backend Service
  */
-import {
-  // deleteFetcher,
-  getFetcher,
-  // postFetcher,
-  // putFetcher
-} from "./apiHelper";
-import * as url from "./urlHelper";
+// import {
+//   // deleteFetcher,
+//   getFetcher,
+//   // postFetcher,
+//   // putFetcher
+// } from "./apiHelper";
+// import * as url from "./urlHelper";
 
 // get tables
-export const fetchTables = async () => {
-  return await getFetcher(url.TABLES_PATH);
-};
+// export const fetchTables = async () => {
+//   return await getFetcher(url.TABLES_PATH);
+// };
 
-// eslint-disable-next-line camelcase
-export const fetchTableColumns = async (table_id: string) => {
-  return await getFetcher(url.TABLES_PATH + "/" + table_id + "/db-columns");
-};
+// // eslint-disable-next-line camelcase
+// export const fetchTableColumns = async (table_id: string) => {
+//   return await getFetcher(url.TABLES_PATH + "/" + table_id + "/db-columns");
+// };
 
 // add table
 // export const addTable = async (table: any) => {

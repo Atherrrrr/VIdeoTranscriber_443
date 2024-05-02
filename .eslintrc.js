@@ -5,7 +5,7 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended", // Base TypeScript rules
     "prettier",
     "next",
     "next/core-web-vitals",
@@ -30,9 +30,7 @@ module.exports = {
   rules: {
     "require-jsdoc": "off",
     "react/react-in-jsx-scope": "off",
-    // ESLint rule for unused vars
-    "no-unused-vars": "off", // Disable the base rule as it can report incorrect errors for TS projects
-    // "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "error", // Ensure functions have explicit return types
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -41,5 +39,9 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
+    "@typescript-eslint/no-explicit-any": "error", // Re-enable this to avoid 'any' type
+    "no-unused-vars": "off", // Still off, handled by TypeScript rule
+    "@typescript-eslint/no-inferrable-types": "error", // Disallow explicit types where inferrable
+    "@typescript-eslint/consistent-type-imports": "error", // Enforce using type imports for TypeScript types
   },
 };

@@ -16,7 +16,7 @@ import {
   IconArmchair,
 } from "@tabler/icons-react";
 
-export default function CategoryNavBar() {
+const CategoryNavBar: React.FC = () => {
   const theme = useTheme();
   const router = useRouter();
   const mainColor = theme.palette.primary.main;
@@ -68,10 +68,8 @@ export default function CategoryNavBar() {
                 width: "200px",
                 // padding:"10px",
                 textTransform: "none",
-                borderLeft:
-                  index === 0 ? 0 : `1px solid ${theme.palette.primary.main}`,
-                borderRight:
-                  index === 6 ? 0 : `1px solid ${theme.palette.primary.main}`,
+                borderLeft: index === 0 ? 0 : `1px solid ${theme.palette.primary.main}`,
+                borderRight: index === 6 ? 0 : `1px solid ${theme.palette.primary.main}`,
               }}
             >
               {category.name}
@@ -81,6 +79,6 @@ export default function CategoryNavBar() {
       </Box>
     </AppBar>
   );
-}
+};
 
-
+export default CategoryNavBar;

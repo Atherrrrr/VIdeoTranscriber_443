@@ -1,6 +1,7 @@
 import React from "react";
 
-import { TextField, TextFieldProps } from "@mui/material";
+import type { TextFieldProps } from "@mui/material";
+import { TextField } from "@mui/material";
 import { styled } from "@mui/system";
 
 interface FilledInputFieldStyles {
@@ -32,7 +33,7 @@ const FilledTextField = styled(TextField)<FilledInputFieldStyles>((props) => ({
   width: "100%",
 }));
 
-export function FilledInputField(props: FilledInputFieldProps) {
+function FilledInputField(props: FilledInputFieldProps): JSX.Element {
   return (
     <FilledTextField
       error={props.error || false}
@@ -53,3 +54,5 @@ export function FilledInputField(props: FilledInputFieldProps) {
     />
   );
 }
+
+export default FilledInputField;

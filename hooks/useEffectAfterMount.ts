@@ -1,6 +1,9 @@
 import * as React from "react";
 
-export function useEffectAfterMount(callback: () => void, arr: ReadonlyArray<unknown>) {
+export function useEffectAfterMount(
+  callback: () => void,
+  dependencies: ReadonlyArray<unknown>
+): void {
   const didMountRef = React.useRef<boolean>(false);
 
   React.useEffect(() => {
@@ -11,5 +14,5 @@ export function useEffectAfterMount(callback: () => void, arr: ReadonlyArray<unk
       console.log("on mount");
       didMountRef.current = true;
     }
-  }, [arr, callback]);
+  }, [dependencies, callback]);
 }

@@ -8,7 +8,7 @@ import Typography from "@mui/joy/Typography";
 import BookmarkAdd from "@mui/icons-material/BookmarkAddOutlined";
 import Image from "next/image";
 
-export default function VideoView() {
+const VideoView: React.FC = () => {
   return (
     <Card sx={{ width: 320 }}>
       <div>
@@ -51,4 +51,6 @@ export default function VideoView() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default VideoView;

@@ -14,7 +14,7 @@ import {
 import { Subtitles, ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/router";
 
-const VideoPage = () => {
+const VideoPage: React.FC = (): JSX.Element => {
   const theme = useTheme();
   const router = useRouter(); // Hook to control routing
   const videoSrc = "https://www.youtube.com/watch?v=iGsFCnJL6ko"; // Place your video URL here

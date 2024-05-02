@@ -43,8 +43,7 @@ const PageContainer = ({ children, theme }) => (
     {children}
   </Box>
 );
-
-export default function Layout(props: LayoutProps) {
+const Layout = (props: LayoutProps): JSX.Element => {
   const theme = useTheme();
 
   // const [currentUser] = useAtom(currentUserAtom);
@@ -163,4 +162,5 @@ export default function Layout(props: LayoutProps) {
       <PageContainer theme={theme}>{props.children}</PageContainer>
     </>
   );
-}
+};
+export default Layout;

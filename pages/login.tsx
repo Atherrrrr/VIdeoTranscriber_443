@@ -36,7 +36,7 @@ const LoginStack = styled(Stack)(({ theme }) => ({
   border: `1px solid ${theme.palette.primary.main}`,
 }));
 
-export default function LoginPage() {
+const LoginPage: React.FC = (): JSX.Element => {
   const router = useRouter();
   const theme = useTheme();
 
@@ -206,4 +206,6 @@ export default function LoginPage() {
       </Box>
     </>
   );
-}
+};
+
+export default LoginPage;

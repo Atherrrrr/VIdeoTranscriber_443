@@ -5,7 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
-export default function AccountsPage() {
+const AccountsPage: React.FC = (): JSX.Element => {
   const [isEditable, setIsEditable] = useState(false);
   const [profile, setProfile] = useState({
     firstName: "John",
@@ -146,4 +146,6 @@ export default function AccountsPage() {
       </Grid>
     </Box>
   );
-}
+};
+
+export default AccountsPage;

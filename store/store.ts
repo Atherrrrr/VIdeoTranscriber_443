@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { PaletteMode } from '@mui/material';
+import type { PaletteMode } from '@mui/material';
 
 // Function to get the theme mode from localStorage
 function getInitialThemeMode(): PaletteMode {

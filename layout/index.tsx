@@ -19,18 +19,14 @@ import { snackbarAtom, snackbarMessage, snackbarSeverity } from "@/store/snackba
 import { useRouter } from "next/router";
 import { NotificationsOutlined } from "@mui/icons-material";
 import { IThemeMode } from "@/theme/types";
+import type { Theme } from "@mui/material";
 
-interface LayoutProps {
+interface PageContainerProps {
   children: React.ReactNode;
+  theme: Theme;
 }
 
-// const PageContainer = styled("div")(({ theme }) => ({
-//   flexGrow: 1,
-//   position: "relative",
-//   paddingTop: 10,
-// }));
-
-const PageContainer = ({ children, theme }) => (
+const PageContainer: React.FC<PageContainerProps> = ({ children, theme }) => (
   <Box
     sx={{
       paddingTop: 12, // Adjust based on AppBar height
@@ -43,6 +39,7 @@ const PageContainer = ({ children, theme }) => (
     {children}
   </Box>
 );
+
 const Layout = (props: LayoutProps): JSX.Element => {
   const theme = useTheme();
 

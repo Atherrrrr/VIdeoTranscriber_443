@@ -1,9 +1,7 @@
 import type { ChangeEvent } from "react";
 import React, { useState, useEffect } from "react";
-// import Skeleton from "@mui/material/Skeleton";
-// import Stack from "@mui/material/Stack";
-// import VideoView from "@/components/PracticeSession/VideoView";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -11,127 +9,73 @@ import {
   Input,
   InputLabel,
   Modal,
+  Snackbar,
   Typography,
+  circularProgressClasses,
   useTheme,
 } from "@mui/material";
-import PracticeSessionsTable from "@/components/Tables/PracticeSessionsTable";
+import type { VideoData } from "@/components/Tables/VideosTable";
+import VideosTable from "@/components/Tables/VideosTable";
 import { PlayCircle } from "@mui/icons-material";
-// import { useRouter } from "next/router";
-
-const sessionData = [
-  {
-    name: "Developer_Intro_Session_2021_08_01",
-    date: "2021-08-01",
-    status: "Processing",
-    duration: "45 mins",
-    fileType: ".mp4",
-    time: "10:00 AM",
-  },
-  {
-    name: "Product_Manager_Strategy_2021_07_25",
-    date: "2021-07-25",
-    status: "Analyzed",
-    duration: "30 mins",
-    fileType: ".mp4",
-    time: "11:00 AM",
-  },
-  {
-    name: "Designer_Workshop_2021_06_17",
-    date: "2021-06-17",
-    status: "Processing",
-    duration: "1 hour",
-    fileType: ".mp4",
-    time: "12:00 PM",
-  },
-  {
-    name: "Developer_Advanced_Tech_2021_08_12",
-    date: "2021-08-12",
-    status: "Analyzed",
-    duration: "2 hours",
-    fileType: ".mp4",
-    time: "01:00 PM",
-  },
-  {
-    name: "Product_Manager_Meeting_2021_05_09",
-    date: "2021-05-09",
-    status: "Analyzed",
-    duration: "1.5 hours",
-    fileType: ".mp4",
-    time: "02:00 PM",
-  },
-  {
-    name: "Designer_Creative_Review_2021_04_22",
-    date: "2021-04-22",
-    status: "Analyzed",
-    duration: "50 mins",
-    fileType: ".mp4",
-    time: "03:00 PM",
-  },
-  {
-    name: "Developer_Code_Review_2021_03_15",
-    date: "2021-03-15",
-    status: "Processing",
-    duration: "40 mins",
-    fileType: ".mp4",
-    time: "04:00 PM",
-  },
-  {
-    name: "Product_Manager_Launch_2021_02_05",
-    date: "2021-02-05",
-    status: "Processing",
-    duration: "1 hour 15 mins",
-    fileType: ".mp4",
-    time: "05:00 PM",
-  },
-  {
-    name: "Designer_Brainstorm_Session_2021_01_30",
-    date: "2021-01-30",
-    status: "Processing",
-    duration: "35 mins",
-    fileType: ".mp4",
-    time: "06:00 PM",
-  },
-  {
-    name: "Developer_Software_Demo_2021_01_12",
-    date: "2021-01-12",
-    status: "Analyzed",
-    duration: "55 mins",
-    fileType: ".mp4",
-    time: "07:00 PM",
-  },
-];
+import axios from "axios";
+import { useSnackbar } from "@/store/snackbar";
+import { VIDEOS_PATH, VIDEO_PATH } from "@/utils/Apihelper";
+import { VideoUploadModal } from "@/components/models/VideoUploadModel";
 
 const DashboardPage: React.FC = (): JSX.Element => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [videoName, setVideoName] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [openModel, setOpenModel] = useState<boolean>(false);
+  const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
+  const [videosList, setVideosList] = useState<VideoData[]>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const theme = useTheme();
+  const snackbar = useSnackbar();
 
-  const handleOpen = (): void => setOpen(true);
-  const handleClose = (): void => setOpen(false);
-  const handleVideoNameChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setVideoName(event.target.value);
+  const userName = "yahya";
+
+  const handleOpen = (): void => setOpenModel(true);
+
+  const handleClose = (): void => {
+    setOpenModel(false);
+    setTimeout(() => {
+      fetchVideosList();
+    }, 2000);
   };
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+
+  const closeSnackbar = (): void => {
+    setOpenSnackBar(false);
+  };
+
+  const onDelete = async (videoId: string) => {
+    try {
+      const response = await axios.delete(`${VIDEO_PATH}/${videoId}`);
+      console.log("Delete Response:", response);
+      setOpenSnackBar(true);
+    } catch (error) {
+      console.log("Failed to delete video:", error);
+      snackbar("error", "Failed to delete video. Please try again later.");
     }
+    fetchVideosList();
   };
 
   useEffect(() => {
-    // Your existing useEffect logic
+    fetchVideosList();
   }, []);
 
-  const handleSubmit = (): void => {
-    setIsUploading(true);
-    setTimeout(() => {
-      console.log(videoName, file);
-      setIsUploading(false);
-      handleClose();
-    }, 5000);
+  const fetchVideosList = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(VIDEOS_PATH, {
+        params: { user_id: userName },
+      });
+      console.log("Video List = ", response.data);
+      setVideosList(response.data.body);
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Failed to fetch video URL:", error);
+      snackbar("error", "Failed to fetch videos list. Please try again later.");
+      setIsLoading(false);
+    }
   };
-
   const style = {
     position: "absolute",
     top: "50%",
@@ -171,60 +115,31 @@ const DashboardPage: React.FC = (): JSX.Element => {
         </Button>
       </Box>
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          {isUploading ? (
-            <>
-              <Typography
-                id="modal-modal-title"
-                variant="h6"
-                component="h2"
-                sx={{ textAlign: "center", width: "100%" }}
-              >
-                Video Uploading
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                }}
-              >
-                <CircularProgress color="primary" />
-              </Box>
-            </>
-          ) : (
-            <>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Upload New Video
-              </Typography>
-              <FormControl fullWidth sx={{ mt: 2 }}>
-                <InputLabel htmlFor="video-name">Video Name</InputLabel>
-                <Input id="video-name" value={videoName} onChange={handleVideoNameChange} />
-              </FormControl>
-              <FormControl fullWidth sx={{ mt: 2 }}>
-                <Button variant="contained" component="label">
-                  Upload File
-                  <input type="file" hidden onChange={handleFileChange} />
-                </Button>
-              </FormControl>
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" onClick={handleSubmit}>
-                  Submit
-                </Button>
-              </Box>
-            </>
-          )}
-        </Box>
-      </Modal>
+      <VideoUploadModal open={openModel} handleClose={handleClose}></VideoUploadModal>
 
-      <PracticeSessionsTable data={sessionData} />
+      <div>
+        {isLoading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+            <CircularProgress
+              sx={{
+                borderRadius: "50%",
+                transform: "rotate(-90deg)",
+                [`& .${circularProgressClasses.circle}`]: {
+                  strokeLinecap: "round",
+                  stroke: theme.palette.text.primary, // Dynamic color for the progress bar
+                },
+              }}
+            />
+          </Box>
+        ) : (
+          videosList && <VideosTable data={videosList} onDelete={onDelete} />
+        )}
+      </div>
+      <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={closeSnackbar}>
+        <Alert onClose={closeSnackbar} severity="success" variant="filled" sx={{ width: "100%" }}>
+          Video Deleted Successfully!
+        </Alert>
+      </Snackbar>
     </>
   );
 };

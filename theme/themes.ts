@@ -1,4 +1,4 @@
-import type { Theme} from "@mui/material";
+import type { Theme } from "@mui/material";
 import { createTheme } from "@mui/material";
 import { red, grey } from "@mui/material/colors";
 
@@ -52,6 +52,7 @@ const commonTypography = {
 export const AppLightTheme: Theme = createTheme({
   palette: {
     mode: "light",
+
     primary: {
       main: "#00255A",
       light: "#E2F1FA",
@@ -64,6 +65,8 @@ export const AppLightTheme: Theme = createTheme({
       main: red[500],
       light: "#ECC8C7",
     },
+    success: { main: "#4caf50" },
+    warning: { main: "#ff9800" },
     background: {
       default: "#FFFFFF",
       paper: "#E2F1FA",
@@ -104,6 +107,8 @@ export const AppDarkTheme: Theme = createTheme({
       main: "#E2F1FA",
       light: "#FFF",
     },
+    success: { main: "#4caf50" },
+    warning: { main: "#ff9800" },
     error: {
       main: "#EF3C34",
       light: "#FFA9A5",

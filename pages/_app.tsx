@@ -12,11 +12,8 @@ export interface MUIAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-// export default function App FC<MUIAppProps> ({ Component, pageProps, emotionCache }: AppProps) {
 const App: FC<MUIAppProps> = ({ Component, pageProps, emotionCache }) => (
-  // return (
   <StoreProvider>
-    {/* <AuthContext> */}
     <PageProvider emotionCache={emotionCache}>
       <Layout>
         {pageProps.protected ? (
@@ -28,9 +25,7 @@ const App: FC<MUIAppProps> = ({ Component, pageProps, emotionCache }) => (
         )}
       </Layout>
     </PageProvider>
-    {/* </AuthContext> */}
   </StoreProvider>
 );
 
-// }
 export default App;

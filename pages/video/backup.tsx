@@ -12,6 +12,9 @@ import {
   IconButton,
   Box,
   Typography,
+  Menu,
+  Badge,
+  MenuItem,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LightDarkSwitchBtn from "@/components/shared/LightDarkSwitchBtn";
@@ -51,45 +54,30 @@ const PageContainer: React.FC<PageContainerProps> = ({ children, theme }) => (
 );
 const Layout = (props: LayoutProps): JSX.Element => {
   const theme = useTheme();
-  // const [ws, setWs] = React.useState(null);
+  const [ws, setWs] = React.useState(null);
 
   const [snackbarStatus, setSnackbarStatus] = useAtom(snackbarAtom);
   const [severity] = useAtom(snackbarSeverity);
   const [message] = useAtom(snackbarMessage);
+  const [notifications, setNotifications] = React.useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const userId = "yahya";
 
-  // React.useEffect(() => {
-  //   // Create WebSocket connection.
-  //   const ws = new WebSocket(
-  //     "wss://togyq1hva3.execute-api.us-east-1.amazonaws.com/production?user_id=yahya"
-  //   );
-
-  //   // Connection opened
-  //   ws.onopen = () => {
-  //     console.log("WebSocket is open now.");
-  //   };
-
-  //   // Listen for messages
-  //   ws.onmessage = (event) => {
-  //     console.log("Message from server ", event.data);
-  //   };
-
-  //   // Connection closed
-  //   ws.onclose = () => {
-  //     console.log("WebSocket is closed now.");
-  //   };
-
-  //   // Handle any error that occurs.
-  //   ws.onerror = (error) => {
-  //     console.log("WebSocket error: ", error);
-  //   };
-
-  //   setWs(ws);
-
-  //   // Clean up function
-  //   return () => {
-  //     ws.close();
-  //   };
-  // }, []);
+  React.useEffect(() => {
+    const ws = new WebSocket(
+      `wss://togyq1hva3.execute-api.us-east-1.amazonaws.com/production?user_id=${userId}`
+    );
+    ws.onopen = () => console.log("WebSocket is open now.");
+    ws.onmessage = (event) => {
+      console.log("Message from server", event.data);
+      const data = JSON.parse(event.data);
+      setNotifications((prev) => [...prev, data]);
+    };
+    ws.onclose = () => console.log("WebSocket is closed now.");
+    ws.onerror = (error) => console.log("WebSocket error:", error);
+    setWs(ws);
+    return () => ws.close();
+  }, []);
 
   const router = useRouter();
   const currentURL = router.asPath;
@@ -100,6 +88,15 @@ const Layout = (props: LayoutProps): JSX.Element => {
 
   const logout = () => {
     router.push(`/login`);
+    ws?.close();
+  };
+
+  const handleNotificationClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -179,9 +176,18 @@ const Layout = (props: LayoutProps): JSX.Element => {
                   gap: 1,
                 }}
               >
-                <IconButton size="small">
-                  <NotificationsOutlined style={{ fill: theme.palette.primary.main }} />
+                <IconButton size="small" onClick={handleNotificationClick}>
+                  <Badge badgeContent={notifications.length} color="error">
+                    <NotificationsOutlined style={{ fill: theme.palette.primary.main }} />
+                  </Badge>
                 </IconButton>
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                  {notifications.map((notification, index) => (
+                    <MenuItem key={index} onClick={handleClose}>
+                      {notification.message}
+                    </MenuItem>
+                  ))}
+                </Menu>
                 <Box onClick={goToAccount}>
                   <Avatar src={"/user-avatar.svg"} />
                 </Box>

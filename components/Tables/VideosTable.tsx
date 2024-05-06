@@ -16,57 +16,7 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useRouter } from "next/router";
 import { AutorenewOutlined, CheckCircleOutlineOutlined } from "@mui/icons-material";
-import type { LanguageMap } from "@/dataClasses/LanguageDictionary";
 
-const formatDate = (dateTimeStr: string) => {
-  const date = new Date(dateTimeStr);
-  const options: Intl.DateTimeFormatOptions = {
-    hour: "2-digit", // Correctly typed as '2-digit' instead of string
-    minute: "2-digit", // Correctly typed as '2-digit' instead of string
-    hour12: true, // Correctly typed as boolean
-  };
-  return {
-    date: date.toLocaleDateString("en-US"), // Assuming 'en-US' or choose appropriate locale
-    time: date.toLocaleTimeString("en-US", options).toUpperCase(), // Convert to upper case for AM/PM
-  };
-};
-
-const determineStatus = (video: VideoData) => {
-  const languages = video.languages.split(", ");
-
-  const allSubtitlesAvailable = languages.every((lang) => {
-    switch (lang.trim()) {
-      case "en":
-        return video.srt_en;
-      case "de":
-        return video.srt_de;
-      case "fr":
-        return video.srt_fr;
-      case "ar":
-        return video.srt_ar;
-      case "tr":
-        return video.srt_tr;
-      default:
-        return false;
-    }
-  });
-
-  return allSubtitlesAvailable ? "Analyzed" : "Processing";
-};
-
-const getLanguageFullForm = (langCode: string): string => {
-  const languageMap: LanguageMap = {
-    en: "English",
-    de: "German",
-    ar: "Arabic",
-    fr: "French",
-    tr: "Turkish",
-  };
-  return langCode
-    .split(", ")
-    .map((code) => languageMap[code.trim()] ?? "Unknown Language") // Provide a fallback if the key isn't found
-    .join(", ");
-};
 export interface VideoData {
   user_id: string;
   languages: string;
@@ -74,11 +24,19 @@ export interface VideoData {
   file_name: string;
   time_stamp: string;
   video_uploaded: boolean;
+  status: string;
   srt_en: boolean;
   srt_fr: boolean;
   srt_tr: boolean;
   srt_ar: boolean;
   srt_de: boolean;
+
+  // Added properties specific to processed videos
+  name: string; // name of the video without the file extension
+  fileType: string; // type of the file determined by the extension
+  time: string; // formatted time string
+  date: string; // formatted date string
+  languagesFullForm: string; // full form of the languages involved
 }
 
 interface VideosTableProps {
@@ -88,19 +46,6 @@ interface VideosTableProps {
 const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
   const theme = useTheme();
   const router = useRouter();
-
-  const processedVideos = data.map((video) => {
-    const { date, time } = formatDate(video.time_stamp);
-    return {
-      ...video,
-      name: video.file_name.replace(/\.mp4$/, ""),
-      fileType: video.file_name.split(".").pop(),
-      time,
-      date,
-      status: determineStatus(video),
-      languages: getLanguageFullForm(video.languages),
-    };
-  });
 
   const goToVideo = (video: VideoData) => {
     const languageList = getSubtitleLanguageList(video);
@@ -174,7 +119,7 @@ const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {processedVideos.map((video, index) => (
+            {data.map((video, index) => (
               <TableRow hover key={index} sx={{ "& > *": { bgcolor: theme.palette.info.light } }}>
                 <TableCell>{video.name}</TableCell>
                 <TableCell>{video.fileType}</TableCell>

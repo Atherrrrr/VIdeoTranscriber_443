@@ -16,12 +16,29 @@ import axios from "axios";
 import { useSnackbar } from "@/store/snackbar";
 import { VIDEOS_PATH, VIDEO_PATH } from "@/utils/Apihelper";
 import { VideoUploadModal } from "@/components/models/VideoUploadModel";
+import { determineStatus, formatDate, getLanguageFullForm } from "@/utils/VideoProcessers";
+
+export interface AwsVideo {
+  user_id: string;
+  languages: string;
+  video_id: string;
+  file_name: string;
+  time_stamp: string;
+  video_uploaded: boolean;
+  srt_en: boolean;
+  srt_fr: boolean;
+  srt_tr: boolean;
+  srt_ar: boolean;
+  srt_de: boolean;
+}
 
 const DashboardPage: React.FC = (): JSX.Element => {
   const [openModel, setOpenModel] = useState<boolean>(false);
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
-  const [videosList, setVideosList] = useState<VideoData[]>();
+  const [videosList, setVideosList] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pooling, setPooling] = useState<boolean>(false);
+
   const theme = useTheme();
   const snackbar = useSnackbar();
 
@@ -33,8 +50,17 @@ const DashboardPage: React.FC = (): JSX.Element => {
     setOpenModel(false);
     setTimeout(() => {
       fetchVideosList();
-    }, 2000);
+    }, 3500);
   };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (pooling) {
+      console.log("Pooling for Processing State Update");
+      intervalId = setInterval(fetchVideosList, 5000);
+    }
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount or pooling stopped
+  }, [pooling]);
 
   const closeSnackbar = (): void => {
     setOpenSnackBar(false);
@@ -57,17 +83,41 @@ const DashboardPage: React.FC = (): JSX.Element => {
   }, []);
 
   const fetchVideosList = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await axios.get(VIDEOS_PATH, {
         params: { user_id: userName },
       });
-      console.log("Video List = ", response.data);
-      setVideosList(response.data.body);
+
+      const processedVideos = response.data.body.map((video: AwsVideo) => {
+        const { date, time } = formatDate(video.time_stamp);
+        return {
+          ...video,
+          name: video.file_name.replace(/\.mp4$/, ""),
+          fileType: video.file_name.split(".").pop(),
+          time,
+          date,
+          status: determineStatus(video),
+          languages: getLanguageFullForm(video.languages),
+        };
+      });
+
+      const allProcessedNew = processedVideos.every(
+        (video: VideoData) => video.status === "Analyzed"
+      );
+      const allProcessedOld = videosList.every((video) => video.status === "Analyzed");
+
+      let bothEqual = processedVideos.length === videosList.length;
+      bothEqual = bothEqual && allProcessedNew === allProcessedOld;
+
+      if (!bothEqual) {
+        setVideosList(processedVideos);
+        setPooling(!allProcessedNew);
+      }
       setIsLoading(false);
     } catch (error) {
-      console.log("Failed to fetch video URL:", error);
-      snackbar("error", "Failed to fetch videos list. Please try again later.");
+      console.error("Failed to fetch videos:", error);
+      snackbar("error", "Failed to load videos. Please try again later.");
       setIsLoading(false);
     }
   };
@@ -99,7 +149,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
       <VideoUploadModal open={openModel} handleClose={handleClose}></VideoUploadModal>
 
       <div>
-        {isLoading ? (
+        {isLoading && videosList.length < 1 ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
             <CircularProgress
               sx={{

@@ -75,12 +75,13 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({ open, handle
     }
 
     setIsUploading(true); // Begin uploading
+    const tempSubtitleLangs = subtitleLangs.filter((lang) => lang !== "en");
 
     try {
       const response = await axios.post(VIDEO_PATH, {
         user_id: userId,
         file_name: `${videoName}.mp4`,
-        languages: subtitleLangs.join(", "),
+        languages: tempSubtitleLangs.join(", "), // Use the filtered array
       });
 
       const uploadUrl = response.data.url;

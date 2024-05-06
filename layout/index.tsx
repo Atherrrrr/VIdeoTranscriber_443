@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import {
   Snackbar,
@@ -12,14 +12,21 @@ import {
   IconButton,
   Box,
   Typography,
+  ListItem,
+  ListItemText,
+  Badge,
+  List,
+  Popover,
+  ListItemIcon,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LightDarkSwitchBtn from "@/components/shared/LightDarkSwitchBtn";
 import { snackbarAtom, snackbarMessage, snackbarSeverity } from "@/store/snackbar";
 import { useRouter } from "next/router";
-import { NotificationsOutlined } from "@mui/icons-material";
+import { CheckCircleOutline, DeleteOutline, NotificationsOutlined } from "@mui/icons-material";
 import { IThemeMode } from "@/theme/types";
 import type { Theme } from "@mui/material";
+import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary";
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -28,6 +35,11 @@ interface PageContainerProps {
 
 interface LayoutProps {
   children: React.ReactNode;
+}
+
+interface Notification {
+  message: string;
+  seen: boolean;
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({ children, theme }) => (
@@ -51,48 +63,63 @@ const PageContainer: React.FC<PageContainerProps> = ({ children, theme }) => (
 );
 const Layout = (props: LayoutProps): JSX.Element => {
   const theme = useTheme();
-  // const [ws, setWs] = React.useState(null);
 
   const [snackbarStatus, setSnackbarStatus] = useAtom(snackbarAtom);
   const [severity] = useAtom(snackbarSeverity);
   const [message] = useAtom(snackbarMessage);
+  const notificationButtonRef = useRef<HTMLButtonElement>(null);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showNotification, setShowNotifications] = useState(false);
+  const unreadCount = notifications.filter((notif) => !notif.seen).length;
 
-  // React.useEffect(() => {
-  //   // Create WebSocket connection.
-  //   const ws = new WebSocket(
-  //     "wss://togyq1hva3.execute-api.us-east-1.amazonaws.com/production?user_id=yahya"
-  //   );
+  useEffect(() => {
+    const newWs = new WebSocket(
+      "wss://togyq1hva3.execute-api.us-east-1.amazonaws.com/production?user_id=yahya"
+    );
 
-  //   // Connection opened
-  //   ws.onopen = () => {
-  //     console.log("WebSocket is open now.");
-  //   };
+    newWs.onopen = () => console.log("WebSocket is open now.");
+    newWs.onmessage = (event) => {
+      const formattedMessage = formatMessage(event.data);
+      // Add the new notification and ensure the list is sorted with unseen messages at the top
+      setNotifications((prev) => {
+        const newNotifications = [{ message: formattedMessage, seen: false }, ...prev];
+        return newNotifications.sort((a, b) => (a.seen === b.seen ? 0 : a.seen ? 1 : -1));
+      });
+    };
+    newWs.onclose = () => console.log("WebSocket is closed now.");
+    newWs.onerror = (error) => console.log("WebSocket error: ", error);
 
-  //   // Listen for messages
-  //   ws.onmessage = (event) => {
-  //     console.log("Message from server ", event.data);
-  //   };
-
-  //   // Connection closed
-  //   ws.onclose = () => {
-  //     console.log("WebSocket is closed now.");
-  //   };
-
-  //   // Handle any error that occurs.
-  //   ws.onerror = (error) => {
-  //     console.log("WebSocket error: ", error);
-  //   };
-
-  //   setWs(ws);
-
-  //   // Clean up function
-  //   return () => {
-  //     ws.close();
-  //   };
-  // }, []);
+    setWs(newWs); // Now correctly typed
+    return () => newWs.close();
+  }, []);
 
   const router = useRouter();
   const currentURL = router.asPath;
+
+  function formatMessage(message: string) {
+    const matches = message.match(/'(\w{2})'/);
+    if (matches && matches[1] && LANGUAGE_DICTIONARY[matches[1]]) {
+      return message.replace(`'${matches[1]}'`, `'${LANGUAGE_DICTIONARY[matches[1]]}'`);
+    }
+    return message;
+  }
+
+  const handleNotificationClick = () => {
+    setShowNotifications((prev) => !prev);
+    if (!showNotification) {
+      console.log("Opening notifications");
+    } else {
+      console.log("Closing notifications and marking all as seen");
+      // Mark all notifications as seen when closing the notification list
+      setNotifications((notifs) => notifs.map((notif) => ({ ...notif, seen: true })));
+    }
+  };
+
+  const handleNotificationClose = () => {
+    setShowNotifications(false);
+    setNotifications((notifs) => notifs.map((notif) => ({ ...notif, seen: true })));
+  };
 
   const goToAccount = () => {
     router.push(`/account`);
@@ -179,9 +206,50 @@ const Layout = (props: LayoutProps): JSX.Element => {
                   gap: 1,
                 }}
               >
-                <IconButton size="small">
-                  <NotificationsOutlined style={{ fill: theme.palette.primary.main }} />
+                <IconButton
+                  size="small"
+                  onClick={handleNotificationClick}
+                  ref={notificationButtonRef} // Attach the ref here
+                >
+                  <Badge badgeContent={unreadCount} color="error">
+                    <NotificationsOutlined sx={{ fill: theme.palette.primary.main }} />
+                  </Badge>
                 </IconButton>
+                <Popover
+                  id="notification-popover"
+                  open={showNotification}
+                  anchorEl={notificationButtonRef.current}
+                  onClose={handleNotificationClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                >
+                  <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.default" }}>
+                    {notifications.map((notification, index) => (
+                      <ListItem key={index}>
+                        <ListItemIcon sx={{ display: "flex", alignItems: "center" }}>
+                          <Box
+                            sx={{
+                              width: 5,
+                              height: 5,
+                              bgcolor: notification.seen ? "background.default" : "error.main",
+                              borderRadius: "50%",
+                              marginRight: 0.7,
+                            }}
+                          />
+
+                          {notification.message.includes("delete") ? (
+                            <DeleteOutline sx={{ fill: theme.palette.success.main }} />
+                          ) : (
+                            <CheckCircleOutline sx={{ fill: theme.palette.success.main }} />
+                          )}
+                        </ListItemIcon>
+                        <ListItemText primary={notification.message} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Popover>
                 <Box onClick={goToAccount}>
                   <Avatar src={"/user-avatar.svg"} />
                 </Box>

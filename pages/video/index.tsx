@@ -75,12 +75,12 @@ const VideoPage: React.FC = (): JSX.Element => {
   };
 
   const fetchSubtitlesForAllLanguages = async (id: string) => {
-    const newSubtitlesUrlMap: Record<string, string> = {};
+    const newSubtitlesUrlMap: SubtitlesUrlMap = {};
     setIsLoading(true);
 
-    for (const lang of availableLanguages) {
+    const fetchPromises = availableLanguages.map(async (lang) => {
       try {
-        const response = await axios.get(SUBTITLES_PATH, { params: { id, lang } });
+        const response = await axios.get(`${SUBTITLES_PATH}?id=${id}&lang=${lang}`);
         const vttUrl = await fetchAndConvertSubtitles(response.data.body);
         if (vttUrl) {
           newSubtitlesUrlMap[lang] = vttUrl;
@@ -89,11 +89,13 @@ const VideoPage: React.FC = (): JSX.Element => {
         console.error(`Failed to fetch subtitles for language ${lang}:`, error);
         snackbar("error", `Failed to load subtitles for language ${lang}. Please try again later.`);
       }
-    }
+    });
 
+    await Promise.all(fetchPromises); // Wait for all subtitles to be fetched and converted
     setSubtitlesUrlMap(newSubtitlesUrlMap);
     setIsLoading(false);
 
+    // Optionally fetch the transcript for the initially selected language
     fetchTranscript(newSubtitlesUrlMap[subtitlesLang]);
   };
 
@@ -229,9 +231,9 @@ const VideoPage: React.FC = (): JSX.Element => {
             {fileName}
           </Typography>
         </Box>
-        <Grid container spacing={2} sx={{ pt: 2 }}>
-          <Grid item xs={12} md={8}>
-            {!isLoading && (
+        {!isLoading && currentVideoUrl && (
+          <Grid container spacing={2} sx={{ pt: 2 }}>
+            <Grid item xs={12} md={8}>
               <Box sx={{ width: "100%", position: "relative", paddingTop: "56.25%" }}>
                 <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
                   <ReactPlayer
@@ -244,75 +246,71 @@ const VideoPage: React.FC = (): JSX.Element => {
                     config={{
                       file: {
                         attributes: { crossOrigin: "anonymous" },
-                        tracks: [
-                          {
-                            kind: "subtitles",
-                            src: subtitlesUrlMap[subtitlesLang] || "",
-                            srcLang: subtitlesLang,
-                            label:
-                              LANGUAGE_DICTIONARY[subtitlesLang.toUpperCase()] ||
-                              subtitlesLang.toUpperCase(),
-                            default: true,
-                          },
-                        ],
+                        tracks: availableLanguages.map((lang) => ({
+                          kind: "subtitles",
+                          src: subtitlesUrlMap[lang],
+                          srcLang: lang,
+                          label: LANGUAGE_DICTIONARY[lang.toUpperCase()] || lang.toUpperCase(),
+                          default: lang === subtitlesLang,
+                        })),
                       },
                     }}
                   />
                 </Box>
               </Box>
-            )}
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel id="language-select-label">Subtitle Language</InputLabel>
+                <Select
+                  labelId="language-select-label"
+                  id="language-select"
+                  value={subtitlesLang}
+                  label="Subtitle Language"
+                  onChange={changeLanguage}
+                >
+                  {availableLanguages.length > 0 ? (
+                    availableLanguages.map((lang) => (
+                      <MenuItem key={lang} value={lang}>
+                        {LANGUAGE_DICTIONARY[lang] || lang}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="en">English</MenuItem> // Fallback option if availableLanguages is empty
+                  )}
+                </Select>
+              </FormControl>
+              {transcript.length > 0 && (
+                <Paper
+                  elevation={3}
+                  sx={{ maxHeight: 500, overflow: "auto", padding: theme.spacing(2) }}
+                >
+                  <Typography variant="h6" gutterBottom>
+                    <Subtitles
+                      sx={{
+                        mr: 1,
+                        mb: 0.5,
+                        verticalAlign: "bottom",
+                        fill: theme.palette.primary.main,
+                      }}
+                    />
+                    Transcript Overview
+                  </Typography>
+                  {transcript.map((subtitle, index) => (
+                    <Box key={index} sx={{ display: "flex", gap: 1, marginBottom: 1 }}>
+                      <Typography variant="body1" component="span" sx={{ fontWeight: "bold" }}>
+                        {subtitle.time}:
+                      </Typography>
+                      <Typography variant="body1" component="span">
+                        {subtitle.text.trim()}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Paper>
+              )}
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel id="language-select-label">Subtitle Language</InputLabel>
-              <Select
-                labelId="language-select-label"
-                id="language-select"
-                value={subtitlesLang}
-                label="Subtitle Language"
-                onChange={changeLanguage}
-              >
-                {availableLanguages.length > 0 ? (
-                  availableLanguages.map((lang) => (
-                    <MenuItem key={lang} value={lang}>
-                      {LANGUAGE_DICTIONARY[lang] || lang}
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem value="en">English</MenuItem> // Fallback option if availableLanguages is empty
-                )}
-              </Select>
-            </FormControl>
-            {transcript.length > 0 && (
-              <Paper
-                elevation={3}
-                sx={{ maxHeight: 500, overflow: "auto", padding: theme.spacing(2) }}
-              >
-                <Typography variant="h6" gutterBottom>
-                  <Subtitles
-                    sx={{
-                      mr: 1,
-                      mb: 0.5,
-                      verticalAlign: "bottom",
-                      fill: theme.palette.primary.main,
-                    }}
-                  />
-                  Transcript Overview
-                </Typography>
-                {transcript.map((subtitle, index) => (
-                  <Box key={index} sx={{ display: "flex", gap: 1, marginBottom: 1 }}>
-                    <Typography variant="body1" component="span" sx={{ fontWeight: "bold" }}>
-                      {subtitle.time}:
-                    </Typography>
-                    <Typography variant="body1" component="span">
-                      {subtitle.text.trim()}
-                    </Typography>
-                  </Box>
-                ))}
-              </Paper>
-            )}
-          </Grid>
-        </Grid>
+        )}
       </Box>
     </>
   );

@@ -1,14 +1,9 @@
-import type { ChangeEvent } from "react";
 import React, { useState, useEffect } from "react";
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
-  FormControl,
-  Input,
-  InputLabel,
-  Modal,
   Snackbar,
   Typography,
   circularProgressClasses,
@@ -75,20 +70,6 @@ const DashboardPage: React.FC = (): JSX.Element => {
       snackbar("error", "Failed to fetch videos list. Please try again later.");
       setIsLoading(false);
     }
-  };
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 500,
-    height: 300,
-    bgcolor: theme.palette.background.default,
-    boxShadow: 24,
-    p: 4,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
   };
 
   return (

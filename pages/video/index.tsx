@@ -22,6 +22,15 @@ import { useSnackbar } from "@/store/snackbar";
 
 const DEFAULT_LANG = "en";
 
+interface SubtitlesUrlMap {
+  [key: string]: string;
+}
+
+interface Subtitle {
+  time: string;
+  text: string;
+}
+
 const VideoPage: React.FC = (): JSX.Element => {
   const theme = useTheme();
   const router = useRouter();
@@ -29,10 +38,10 @@ const VideoPage: React.FC = (): JSX.Element => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
   const [subtitlesLang, setSubtitlesLang] = useState(DEFAULT_LANG);
   const [videoId, setVideoId] = useState("");
-  const [subtitlesUrlMap, setSubtitlesUrlMap] = useState({});
+  const [subtitlesUrlMap, setSubtitlesUrlMap] = useState<SubtitlesUrlMap>({});
   const [fileName, setFileName] = useState("");
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
-  const [subtitles, setSubtitles] = useState([]);
+  const [transcript, setTranscript] = useState<Subtitle[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -54,7 +63,7 @@ const VideoPage: React.FC = (): JSX.Element => {
     }
   }, [videoId]);
 
-  const fetchVideoUrl = async (id) => {
+  const fetchVideoUrl = async (id: string) => {
     try {
       const response = await axios.get(VIDEO_PATH, { params: { id } });
       console.log("currentVideoUrl, ", response.data.body);
@@ -65,9 +74,9 @@ const VideoPage: React.FC = (): JSX.Element => {
     }
   };
 
-  const fetchSubtitlesForAllLanguages = async (id) => {
-    const newSubtitlesUrlMap = {};
-    setIsLoading(true); // Assuming there's a state to track loading
+  const fetchSubtitlesForAllLanguages = async (id: string) => {
+    const newSubtitlesUrlMap: Record<string, string> = {};
+    setIsLoading(true);
 
     for (const lang of availableLanguages) {
       try {
@@ -82,14 +91,13 @@ const VideoPage: React.FC = (): JSX.Element => {
       }
     }
 
-    setSubtitlesUrlMap(newSubtitlesUrlMap); // Update state
+    setSubtitlesUrlMap(newSubtitlesUrlMap);
     setIsLoading(false);
 
-    // Now call fetchTranscript for the selected language
     fetchTranscript(newSubtitlesUrlMap[subtitlesLang]);
   };
 
-  const fetchTranscript = async (subtitlesUrl) => {
+  const fetchTranscript = async (subtitlesUrl: string) => {
     if (!subtitlesUrl) {
       console.error("No subtitles URL provided");
       return;
@@ -98,14 +106,19 @@ const VideoPage: React.FC = (): JSX.Element => {
     try {
       console.log("subtitlesUrl in fetchTranscript =", subtitlesUrl);
       const response = await axios.get(subtitlesUrl, {
-        responseType: "blob", // Handle the response as a Blob
+        responseType: "blob",
       });
       const subtitlesBlob = response.data;
       const reader = new FileReader();
 
       reader.onload = () => {
-        const subtitlesText = reader.result;
-        parseSubtitles(subtitlesText); // Function to parse subtitles text
+        if (typeof reader.result === "string") {
+          const subtitlesText = reader.result;
+          parseSubtitles(subtitlesText); // Function to parse subtitles text
+        } else {
+          console.error("Failed to read subtitles as text.");
+          snackbar("error", "Failed to process subtitles file.");
+        }
       };
 
       reader.readAsText(subtitlesBlob);
@@ -122,7 +135,7 @@ const VideoPage: React.FC = (): JSX.Element => {
     }
   }, [subtitlesLang, subtitlesUrlMap]);
 
-  const srtToVtt = (srtData) => {
+  const srtToVtt = (srtData: string) => {
     const vttData =
       "WEBVTT\n\n" +
       srtData
@@ -132,7 +145,7 @@ const VideoPage: React.FC = (): JSX.Element => {
     return vttData;
   };
 
-  const fetchAndConvertSubtitles = async (url) => {
+  const fetchAndConvertSubtitles = async (url: string): Promise<string | null> => {
     try {
       const response = await fetch(url);
       const srtText = await response.text();
@@ -148,37 +161,39 @@ const VideoPage: React.FC = (): JSX.Element => {
   };
 
   const parseSubtitles = (vttString: string) => {
-    const parsed = [];
+    const parsed: Subtitle[] = []; // Specify the type for parsed as an array of Subtitle
     const lines = vttString.split("\n");
-    lines.forEach((line, index) => {
+
+    lines.forEach((line) => {
       if (line.includes("-->")) {
         const timeRange = line.split("-->")[0].trim();
         const formattedTime = formatVTTTime(timeRange.split(".")[0]);
-        parsed.push({ time: formattedTime, text: "" });
+        parsed.push({ time: formattedTime, text: "" }); // Correctly typed object
       } else if (
         line.trim() !== "" &&
         !line.startsWith("WEBVTT") &&
         !line.startsWith("NOTE") &&
-        !line.startsWith("STYLE")
+        !line.startsWith("STYLE") &&
+        parsed.length > 0
       ) {
-        if (parsed.length > 0) {
-          // Check if the trimmed line is not just numbers
-          if (!/^\d+$/.test(line.trim())) {
-            parsed[parsed.length - 1].text += line.trim() + " ";
-          }
+        // Ensure that parsed is not empty before trying to access its last element
+        const lastSubtitle = parsed[parsed.length - 1];
+        if (!/^\d+$/.test(line.trim())) {
+          // Check if the line is not just numbers
+          lastSubtitle.text += line.trim() + " ";
         }
       }
     });
-    setSubtitles(parsed);
+
+    setTranscript(parsed); // Set the parsed subtitles
   };
 
   const formatVTTTime = (timeString: string) => {
-    // VTT time is usually in hh:mm:ss.mmm format, so we strip milliseconds and ensure proper hh:mm:ss format
     const parts = timeString.split(":");
     if (parts.length === 3) {
-      return parts[0] + ":" + parts[1] + ":" + parts[2].split(",")[0]; // Remove milliseconds
+      return parts[0] + ":" + parts[1] + ":" + parts[2].split(",")[0];
     }
-    return timeString; // Return original if format is unexpected
+    return timeString;
   };
 
   // Function to handle language change
@@ -268,7 +283,7 @@ const VideoPage: React.FC = (): JSX.Element => {
                 )}
               </Select>
             </FormControl>
-            {subtitles.length > 0 && (
+            {transcript.length > 0 && (
               <Paper
                 elevation={3}
                 sx={{ maxHeight: 500, overflow: "auto", padding: theme.spacing(2) }}
@@ -284,7 +299,7 @@ const VideoPage: React.FC = (): JSX.Element => {
                   />
                   Transcript Overview
                 </Typography>
-                {subtitles.map((subtitle, index) => (
+                {transcript.map((subtitle, index) => (
                   <Box key={index} sx={{ display: "flex", gap: 1, marginBottom: 1 }}>
                     <Typography variant="body1" component="span" sx={{ fontWeight: "bold" }}>
                       {subtitle.time}:

@@ -1,4 +1,5 @@
-import React, { useState, SyntheticEvent } from "react";
+import React, { useState } from "react";
+import type { SelectChangeEvent } from "@mui/material";
 import {
   Modal,
   Box,
@@ -44,11 +45,16 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({ open, handle
       setVideoName(selectedFile.name.split(".").slice(0, -1).join(".")); // Optionally update the name based on file name
     }
   };
+  const handleLanguageChange = (
+    event: SelectChangeEvent<string[]> // Specify that the event value is an array of strings
+  ) => {
+    // TypeScript needs assurance that the value is indeed string[];
+    // This check is redundant logically but satisfies TypeScript's type safety.
+    const newLangs =
+      event.target.value instanceof Array ? event.target.value : [event.target.value];
 
-  const handleLanguageChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const newLangs = event.target.value as string[];
+    // If 'en' is required and not present, add it
     if (!newLangs.includes("en")) {
-      // Ensure English is always selected
       newLangs.push("en");
     }
     setSubtitleLangs(newLangs);

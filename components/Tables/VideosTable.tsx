@@ -12,7 +12,6 @@ import {
   useTheme,
   Chip,
 } from "@mui/material";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useRouter } from "next/router";
@@ -21,10 +20,10 @@ import type { LanguageMap } from "@/dataClasses/LanguageDictionary";
 
 const formatDate = (dateTimeStr: string) => {
   const date = new Date(dateTimeStr);
-  const options = {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true, // Specify whether to use 12-hour format
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit", // Correctly typed as '2-digit' instead of string
+    minute: "2-digit", // Correctly typed as '2-digit' instead of string
+    hour12: true, // Correctly typed as boolean
   };
   return {
     date: date.toLocaleDateString("en-US"), // Assuming 'en-US' or choose appropriate locale
@@ -84,8 +83,8 @@ export interface VideoData {
 
 interface VideosTableProps {
   data: VideoData[];
+  onDelete: (videoId: string) => Promise<void>;
 }
-
 const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
   const theme = useTheme();
   const router = useRouter();

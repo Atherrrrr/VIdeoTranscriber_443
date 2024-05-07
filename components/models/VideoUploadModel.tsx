@@ -23,15 +23,19 @@ import { CheckCircle, CloudUpload } from "@mui/icons-material";
 interface VideoUploadModalProps {
   open: boolean;
   handleClose: () => void;
+  userId: string | undefined;
 }
 
-export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({ open, handleClose }) => {
+export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
+  open,
+  handleClose,
+  userId,
+}) => {
   const [videoName, setVideoName] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [subtitleLangs, setSubtitleLangs] = useState<string[]>(["en"]); // Initialize with English
   const snackbar = useSnackbar();
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const userId = "yahya";
   const theme = useTheme();
 
   const handleVideoNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {

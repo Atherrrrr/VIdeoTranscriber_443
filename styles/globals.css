@@ -44,3 +44,11 @@ a {
 *::-webkit-scrollbar-thumb:hover {
   background: #e2f1fa;
 }
+
+.authenticator .logo {
+  background-image: url("/app-logo-light.png");
+  height: 60px;
+  width: 200px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}

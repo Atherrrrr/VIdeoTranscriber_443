@@ -17,6 +17,8 @@ import { useSnackbar } from "@/store/snackbar";
 import { VIDEOS_PATH, VIDEO_PATH } from "@/utils/Apihelper";
 import { VideoUploadModal } from "@/components/models/VideoUploadModel";
 import { determineStatus, formatDate, getLanguageFullForm } from "@/utils/VideoProcessers";
+import { useAtom } from "jotai";
+import { currentUserAtom } from "@/store/store";
 
 export interface AwsVideo {
   user_id: string;
@@ -38,11 +40,10 @@ const DashboardPage: React.FC = (): JSX.Element => {
   const [videosList, setVideosList] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pooling, setPooling] = useState<boolean>(false);
+  const [currentUser] = useAtom(currentUserAtom);
 
   const theme = useTheme();
   const snackbar = useSnackbar();
-
-  const userName = "yahya";
 
   const handleOpen = (): void => setOpenModel(true);
 
@@ -71,22 +72,25 @@ const DashboardPage: React.FC = (): JSX.Element => {
       const response = await axios.delete(`${VIDEO_PATH}/${videoId}`);
       console.log("Delete Response:", response);
       setOpenSnackBar(true);
+      fetchVideosList();
     } catch (error) {
-      console.log("Failed to delete video:", error);
+      console.error("Failed to delete video:", error);
       snackbar("error", "Failed to delete video. Please try again later.");
     }
-    fetchVideosList();
   };
 
   useEffect(() => {
-    fetchVideosList();
-  }, []);
+    if (currentUser) {
+      fetchVideosList();
+    }
+  }, [currentUser]);
 
-  const fetchVideosList = async () => {
+  const fetchVideosList = async (): Promise<void> => {
     setIsLoading(true);
     try {
+      console.log("currentUser sub =", currentUser);
       const response = await axios.get(VIDEOS_PATH, {
-        params: { user_id: userName },
+        params: { user_id: currentUser?.sub },
       });
 
       const processedVideos = response.data.body.map((video: AwsVideo) => {
@@ -125,7 +129,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
   return (
     <>
       <Typography variant="h2" align="center" gutterBottom>
-        Welcome Maher 👋
+        Welcome {currentUser?.given_name} 👋
       </Typography>
       <Box
         sx={{
@@ -146,7 +150,11 @@ const DashboardPage: React.FC = (): JSX.Element => {
         </Button>
       </Box>
 
-      <VideoUploadModal open={openModel} handleClose={handleClose}></VideoUploadModal>
+      <VideoUploadModal
+        open={openModel}
+        handleClose={handleClose}
+        userId={currentUser?.sub}
+      ></VideoUploadModal>
 
       <div>
         {isLoading && videosList.length < 1 ? (

@@ -27,6 +27,9 @@ import { CheckCircleOutline, DeleteOutline, NotificationsOutlined } from "@mui/i
 import { IThemeMode } from "@/theme/types";
 import type { Theme } from "@mui/material";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary";
+import type { FetchUserAttributesOutput } from "aws-amplify/auth";
+import { fetchUserAttributes, signOut } from "aws-amplify/auth";
+import { currentUserAtom } from "@/store/store";
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -63,7 +66,6 @@ const PageContainer: React.FC<PageContainerProps> = ({ children, theme }) => (
 );
 const Layout = (props: LayoutProps): JSX.Element => {
   const theme = useTheme();
-
   const [snackbarStatus, setSnackbarStatus] = useAtom(snackbarAtom);
   const [severity] = useAtom(snackbarSeverity);
   const [message] = useAtom(snackbarMessage);
@@ -72,30 +74,46 @@ const Layout = (props: LayoutProps): JSX.Element => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotification, setShowNotifications] = useState(false);
   const unreadCount = notifications.filter((notif) => !notif.seen).length;
-
-  useEffect(() => {
-    const newWs = new WebSocket(
-      "wss://togyq1hva3.execute-api.us-east-1.amazonaws.com/production?user_id=yahya"
-    );
-
-    newWs.onopen = () => console.log("WebSocket is open now.");
-    newWs.onmessage = (event) => {
-      const formattedMessage = formatMessage(event.data);
-      // Add the new notification and ensure the list is sorted with unseen messages at the top
-      setNotifications((prev) => {
-        const newNotifications = [{ message: formattedMessage, seen: false }, ...prev];
-        return newNotifications.sort((a, b) => (a.seen === b.seen ? 0 : a.seen ? 1 : -1));
-      });
-    };
-    newWs.onclose = () => console.log("WebSocket is closed now.");
-    newWs.onerror = (error) => console.log("WebSocket error: ", error);
-
-    setWs(newWs); // Now correctly typed
-    return () => newWs.close();
-  }, []);
-
   const router = useRouter();
   const currentURL = router.asPath;
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+
+  useEffect(() => {
+    fetchUserAttributes()
+      .then((user) => {
+        console.log("currentUser", user);
+        setCurrentUser(user); // Update the atom with fetched user data
+      })
+      .catch((error) => {
+        console.error("Error fetching user:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      const newWs = new WebSocket(
+        `wss://togyq1hva3.execute-api.us-east-1.amazonaws.com/production?user_id=${currentUser.sub}`
+      );
+      newWs.onopen = () => console.log("WebSocket is open now.");
+      newWs.onmessage = (event) => {
+        const formattedMessage = formatMessage(event.data);
+        // Add the new notification and ensure the list is sorted with unseen messages at the top
+        setNotifications((prev) => {
+          const newNotifications = [{ message: formattedMessage, seen: false }, ...prev];
+          return newNotifications.sort((a, b) => (a.seen === b.seen ? 0 : a.seen ? 1 : -1));
+        });
+      };
+      newWs.onclose = () => console.log("WebSocket is closed now.");
+      newWs.onerror = (error) => console.log("WebSocket error: ", error);
+
+      setWs(newWs);
+      return () => {
+        if (ws) {
+          ws.close();
+        }
+      };
+    }
+  }, [currentUser]);
 
   function formatMessage(message: string) {
     const matches = message.match(/'(\w{2})'/);
@@ -125,8 +143,12 @@ const Layout = (props: LayoutProps): JSX.Element => {
     router.push(`/account`);
   };
 
-  const logout = () => {
-    router.push(`/login`);
+  const logout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
   return (
@@ -166,7 +188,6 @@ const Layout = (props: LayoutProps): JSX.Element => {
               padding: "0.5rem 0.75rem",
               zIndex: (theme) => theme.zIndex.drawer + 1,
             }}
-            // sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
           >
             <Grid container sx={{ width: "100%" }} alignItems="center">
               <Grid
@@ -254,7 +275,7 @@ const Layout = (props: LayoutProps): JSX.Element => {
                   <Avatar src={"/user-avatar.svg"} />
                 </Box>
                 <Typography variant="subtitle2" color={theme.palette.primary.main}>
-                  Maher Athar
+                  {currentUser?.given_name} {currentUser?.family_name}
                 </Typography>
                 <LightDarkSwitchBtn />
               </Grid>

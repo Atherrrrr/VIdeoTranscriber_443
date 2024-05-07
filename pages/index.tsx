@@ -1,3 +1,15 @@
+// function Home({ signOut, user }) {
+//   console.log("user = ", user);
+//   return (
+//     <>
+//       <h1>Hello {user.username}</h1>
+//       <button onClick={signOut}>Sign out</button>
+//     </>
+//   );
+// }
+
+// export default withAuthenticator(Home);
+
 import type { GetServerSideProps, GetServerSidePropsResult } from "next";
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<

@@ -9,7 +9,6 @@ import "@aws-amplify/ui-react/styles.css";
 import { Amplify } from "aws-amplify";
 import awsconfig from "../aws-exports";
 import PageProvider from "@/components/layout/PageProvider";
-// import "@/styles/global.css";
 
 Amplify.configure({ ...awsconfig }, { ssr: true });
 

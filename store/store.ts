@@ -24,3 +24,4 @@ function getInitialThemeMode(): PaletteMode {
 // Define the atom with the initial value read from localStorage
 export const themeModeAtom = atom<PaletteMode>(getInitialThemeMode());
 export const currentUserAtom = atom<FetchUserAttributesOutput | null>(null);
+export const accessTokenAtom = atom<string | null>(null);

@@ -34,7 +34,7 @@ import { IThemeMode } from "@/theme/types";
 import type { Theme } from "@mui/material";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary";
 import { fetchAuthSession, fetchUserAttributes, signOut } from "aws-amplify/auth";
-import { currentUserAtom } from "@/store/store";
+import { accessTokenAtom, currentUserAtom } from "@/store/store";
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -83,6 +83,7 @@ const Layout = (props: LayoutProps): JSX.Element => {
   const router = useRouter();
   const currentURL = router.asPath;
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const [, setAccessToken] = useAtom(accessTokenAtom);
 
   useEffect(() => {
     fetchUserAttributes()
@@ -93,12 +94,19 @@ const Layout = (props: LayoutProps): JSX.Element => {
       .catch((error) => {
         console.error("Error fetching user:", error);
       });
+
     fetchAuthSession()
-      .then((user) => {
-        console.log("fetchAuthSession", user);
+      .then((session) => {
+        if (session.tokens && session.tokens.idToken) {
+          console.log("session", session);
+          const accessToken = session.tokens.idToken;
+          setAccessToken(accessToken.toString());
+        } else {
+          console.error("No access token available");
+        }
       })
       .catch((error) => {
-        console.error("Error fetching user:", error);
+        console.error("Error fetching session:", error);
       });
   }, []);
 
@@ -207,11 +215,10 @@ const Layout = (props: LayoutProps): JSX.Element => {
                 item
                 xs={1}
                 sx={{
-                  // ml: matches ? 2 : 0,
                   height: matches ? 30 : 50,
                   display: "flex",
-                  alignItems: "center", // Center vertically
-                  justifyContent: "center", // Center horizontally
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <Box
@@ -294,10 +301,8 @@ const Layout = (props: LayoutProps): JSX.Element => {
                 <Box
                   sx={{
                     "& > :first-child": {
-                      // Targeting the first child directly which should be LightDarkSwitchBtn
-                      marginRight: matches ? -3 : 0, // Applying negative margin to move it more to the left
+                      marginRight: matches ? -3 : 0,
                     },
-                    // paddingRight: 2,
                   }}
                 >
                   <LightDarkSwitchBtn />

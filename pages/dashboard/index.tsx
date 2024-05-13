@@ -19,7 +19,7 @@ import { VIDEOS_PATH, VIDEO_PATH } from "@/utils/Apihelper";
 import { VideoUploadModal } from "@/components/models/VideoUploadModel";
 import { determineStatus, formatDate, getLanguageFullForm } from "@/utils/VideoProcessers";
 import { useAtom } from "jotai";
-import { currentUserAtom } from "@/store/store";
+import { accessTokenAtom, currentUserAtom } from "@/store/store";
 
 export interface AwsVideo {
   user_id: string;
@@ -43,6 +43,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pooling, setPooling] = useState<boolean>(false);
   const [currentUser] = useAtom(currentUserAtom);
+  const [accessToken] = useAtom(accessTokenAtom);
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const snackbar = useSnackbar();
@@ -74,7 +75,11 @@ const DashboardPage: React.FC = (): JSX.Element => {
 
   const onDelete = async (videoId: string) => {
     try {
-      const response = await axios.delete(`${VIDEO_PATH}/${videoId}`);
+      const response = await axios.delete(`${VIDEO_PATH}/${videoId}`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
       console.log("Delete Response:", response);
       setOpenSnackBar(true);
       fetchVideosList();
@@ -95,6 +100,9 @@ const DashboardPage: React.FC = (): JSX.Element => {
     try {
       const response = await axios.get(VIDEOS_PATH, {
         params: { user_id: currentUser?.sub },
+        headers: {
+          Authorization: `${accessToken}`,
+        },
       });
 
       const processedVideos = response.data.body.map((video: AwsVideo) => {

@@ -20,6 +20,8 @@ import axios from "axios";
 import { SUBTITLES_PATH, VIDEO_PATH } from "@/utils/Apihelper";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary";
 import { useSnackbar } from "@/store/snackbar";
+import { accessTokenAtom } from "@/store/store";
+import { useAtom } from "jotai";
 
 const DEFAULT_LANG = "en";
 
@@ -44,6 +46,7 @@ const VideoPage: React.FC = (): JSX.Element => {
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
   const [transcript, setTranscript] = useState<Subtitle[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [accessToken] = useAtom(accessTokenAtom);
 
   useEffect(() => {
     if (router.isReady) {
@@ -66,7 +69,12 @@ const VideoPage: React.FC = (): JSX.Element => {
 
   const fetchVideoUrl = async (id: string) => {
     try {
-      const response = await axios.get(VIDEO_PATH, { params: { id } });
+      const response = await axios.get(VIDEO_PATH, {
+        params: { id },
+        headers: {
+          Authorization: accessToken,
+        },
+      });
       console.log("currentVideoUrl, ", response.data.body);
       setCurrentVideoUrl(response.data.body);
     } catch (error) {
@@ -81,7 +89,11 @@ const VideoPage: React.FC = (): JSX.Element => {
 
     const fetchPromises = availableLanguages.map(async (lang) => {
       try {
-        const response = await axios.get(`${SUBTITLES_PATH}?id=${id}&lang=${lang}`);
+        const response = await axios.get(`${SUBTITLES_PATH}?id=${id}&lang=${lang}`, {
+          headers: {
+            Authorization: accessToken,
+          },
+        });
         const vttUrl = await fetchAndConvertSubtitles(response.data.body);
         if (vttUrl) {
           newSubtitlesUrlMap[lang] = vttUrl;
@@ -110,6 +122,10 @@ const VideoPage: React.FC = (): JSX.Element => {
       console.log("subtitlesUrl in fetchTranscript =", subtitlesUrl);
       const response = await axios.get(subtitlesUrl, {
         responseType: "blob",
+
+        headers: {
+          Authorization: accessToken,
+        },
       });
       const subtitlesBlob = response.data;
       const reader = new FileReader();

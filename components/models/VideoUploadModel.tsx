@@ -19,6 +19,8 @@ import axios from "axios";
 import { VIDEO_PATH } from "@/utils/Apihelper";
 import { useSnackbar } from "@/store/snackbar";
 import { CheckCircle, CloudUpload } from "@mui/icons-material";
+import { accessTokenAtom } from "@/store/store";
+import { useAtom } from "jotai";
 
 interface VideoUploadModalProps {
   open: boolean;
@@ -37,6 +39,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   const snackbar = useSnackbar();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const theme = useTheme();
+  const [accessToken] = useAtom(accessTokenAtom);
 
   const handleVideoNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVideoName(event.target.value);
@@ -83,11 +86,19 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     const tempSubtitleLangs = subtitleLangs.filter((lang) => lang !== "en");
 
     try {
-      const response = await axios.post(VIDEO_PATH, {
-        user_id: userId,
-        file_name: `${videoName}.mp4`,
-        languages: tempSubtitleLangs.join(", "), // Use the filtered array
-      });
+      const response = await axios.post(
+        VIDEO_PATH,
+        {
+          user_id: userId,
+          file_name: `${videoName}.mp4`,
+          languages: tempSubtitleLangs.join(", "), // Use the filtered array
+        },
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        }
+      );
 
       const uploadUrl = response.data.url;
       console.log("Upload URL = ", uploadUrl);

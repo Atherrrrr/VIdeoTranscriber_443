@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary"; // Assuming this import path
 import axios from "axios";
-import { VIDEO_PATH } from "@/utils/Apihelper";
+import { VIDEO_PATH } from "@/hooks/Apihelper";
 import { useSnackbar } from "@/store/snackbar";
 import { CheckCircle, CloudUpload } from "@mui/icons-material";
 import { accessTokenAtom } from "@/store/store";

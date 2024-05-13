@@ -17,7 +17,7 @@ import { Subtitles, ArrowBack, CloudDownload } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import ReactPlayer from "react-player";
 import axios from "axios";
-import { SUBTITLES_PATH, VIDEO_PATH } from "@/utils/Apihelper";
+import { SUBTITLES_PATH, VIDEO_PATH } from "@/hooks/Apihelper";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary";
 import { useSnackbar } from "@/store/snackbar";
 import { accessTokenAtom } from "@/store/store";

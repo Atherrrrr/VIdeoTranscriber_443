@@ -5,11 +5,3 @@ const SomePage: React.FC = (): JSX.Element => {
 };
 
 export default SomePage;
-
-// export async function getStaticProps() {
-//   return {
-//     props: {
-//       protected: true,
-//     },
-//   };
-// }a

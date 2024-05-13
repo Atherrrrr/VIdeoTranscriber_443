@@ -15,7 +15,7 @@ import VideosTable from "@/components/Tables/VideosTable";
 import { PlayCircle } from "@mui/icons-material";
 import axios from "axios";
 import { useSnackbar } from "@/store/snackbar";
-import { VIDEOS_PATH, VIDEO_PATH } from "@/utils/Apihelper";
+import { VIDEOS_PATH, VIDEO_PATH } from "@/hooks/Apihelper";
 import { VideoUploadModal } from "@/components/models/VideoUploadModel";
 import { determineStatus, formatDate, getLanguageFullForm } from "@/utils/VideoProcessers";
 import { useAtom } from "jotai";

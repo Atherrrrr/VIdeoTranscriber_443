@@ -69,7 +69,6 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
 
   const onClose = (updated: boolean) => {
     // Clear form values
-    console.log("onCLose"); // Fixed typo in "this"
     setVideoName("");
     setFile(null);
     setSubtitleLangs(["en"]);

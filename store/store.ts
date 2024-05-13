@@ -15,7 +15,7 @@ function getInitialThemeMode(): PaletteMode {
     savedMode =
       localStorageMode === "light" || localStorageMode === "dark" ? localStorageMode : "light";
   } else {
-    console.log("window is not defined");
+    console.log("window is not defined for theming");
   }
 
   return savedMode as PaletteMode;

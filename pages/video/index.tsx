@@ -75,7 +75,6 @@ const VideoPage: React.FC = (): JSX.Element => {
           Authorization: accessToken,
         },
       });
-      console.log("currentVideoUrl, ", response.data.body);
       setCurrentVideoUrl(response.data.body);
     } catch (error) {
       console.error("Failed to fetch video URL:", error);

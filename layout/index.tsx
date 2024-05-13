@@ -89,7 +89,6 @@ const Layout = (props: LayoutProps): JSX.Element => {
     fetchUserAttributes()
       .then((user) => {
         setCurrentUser(user);
-        console.log("user", user);
       })
       .catch((error) => {
         console.error("Error fetching user:", error);
@@ -98,7 +97,6 @@ const Layout = (props: LayoutProps): JSX.Element => {
     fetchAuthSession()
       .then((session) => {
         if (session.tokens && session.tokens.idToken) {
-          console.log("session", session);
           const accessToken = session.tokens.idToken;
           setAccessToken(accessToken.toString());
         } else {
@@ -149,7 +147,6 @@ const Layout = (props: LayoutProps): JSX.Element => {
     if (!showNotification) {
       console.log("Opening notifications");
     } else {
-      console.log("Closing notifications and marking all as seen");
       // Mark all notifications as seen when closing the notification list
       setNotifications((notifs) => notifs.map((notif) => ({ ...notif, seen: true })));
     }

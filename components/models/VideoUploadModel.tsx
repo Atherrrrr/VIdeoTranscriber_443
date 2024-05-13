@@ -22,7 +22,7 @@ import { CheckCircle, CloudUpload } from "@mui/icons-material";
 
 interface VideoUploadModalProps {
   open: boolean;
-  handleClose: () => void;
+  handleClose: (updated: boolean) => void;
   userId: string | undefined;
 }
 
@@ -64,12 +64,13 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     setSubtitleLangs(newLangs);
   };
 
-  const onClose = () => {
+  const onClose = (updated: boolean) => {
     // Clear form values
+    console.log("onCLose"); // Fixed typo in "this"
     setVideoName("");
     setFile(null);
     setSubtitleLangs(["en"]);
-    handleClose();
+    handleClose(updated);
   };
 
   const handleSubmit = async () => {
@@ -98,6 +99,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
 
         if (fileUploadResponse.status === 200) {
           snackbar("success", "Video uploaded successfully.");
+          onClose(true);
         } else {
           snackbar("error", "Failed to upload video. Please try again later.");
         }
@@ -107,10 +109,10 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     } catch (error) {
       console.error("Error during video upload:", error);
       snackbar("error", "Failed to upload video. Please try again later.");
+      onClose(false);
     }
 
     setIsUploading(false); // End uploading
-    onClose();
   };
 
   const style = {
@@ -129,7 +131,9 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      // onClick={() => {
+
+      // }} // Fixed typo in "this"onClose(false)}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -210,7 +214,13 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
               </Select>
             </FormControl>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button variant="contained" onClick={onClose} sx={{ mr: 1 }}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  onClose(false);
+                }}
+                sx={{ mr: 1 }}
+              >
                 Cancel
               </Button>
               <Button variant="contained" onClick={handleSubmit}>

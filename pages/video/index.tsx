@@ -11,8 +11,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
 } from "@mui/material";
-import { Subtitles, ArrowBack } from "@mui/icons-material";
+import { Subtitles, ArrowBack, CloudDownload } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import ReactPlayer from "react-player";
 import axios from "axios";
@@ -203,6 +204,41 @@ const VideoPage: React.FC = (): JSX.Element => {
     setSubtitlesLang(event.target.value as string);
     console.log("Language changed to:", event.target.value);
   };
+  const downloadVideo = async (url: string): Promise<void> => {
+    if (!url) {
+      snackbar("error", "No video URL found.");
+      return;
+    }
+
+    // Trim the fileName and set a default if empty
+    const sanitizedFileName = fileName.trim() !== "" ? fileName.trim() : "download";
+    const fileNameWithExtension = sanitizedFileName.endsWith(".mp4")
+      ? sanitizedFileName
+      : `${sanitizedFileName}.mp4`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network response was not ok.");
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element to initiate download
+      const downloadLink = document.createElement("a");
+      downloadLink.href = downloadUrl;
+      downloadLink.download = fileNameWithExtension;
+
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      // Clean up the URL object
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Failed to fetch video for download:", error);
+      snackbar("error", "Failed to download video. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -260,6 +296,14 @@ const VideoPage: React.FC = (): JSX.Element => {
               </Box>
             </Grid>
             <Grid item xs={12} md={4}>
+              <Button
+                variant="contained"
+                onClick={() => downloadVideo(currentVideoUrl)}
+                startIcon={<CloudDownload />}
+                sx={{ mb: 2, width: "100%" }}
+              >
+                Download Video
+              </Button>
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="language-select-label">Subtitle Language</InputLabel>
                 <Select

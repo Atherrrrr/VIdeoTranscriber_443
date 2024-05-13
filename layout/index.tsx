@@ -18,17 +18,22 @@ import {
   List,
   Popover,
   ListItemIcon,
+  useMediaQuery,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LightDarkSwitchBtn from "@/components/shared/LightDarkSwitchBtn";
 import { snackbarAtom, snackbarMessage, snackbarSeverity } from "@/store/snackbar";
 import { useRouter } from "next/router";
-import { CheckCircleOutline, DeleteOutline, NotificationsOutlined } from "@mui/icons-material";
+import {
+  CheckCircleOutline,
+  DeleteOutline,
+  Logout,
+  NotificationsOutlined,
+} from "@mui/icons-material";
 import { IThemeMode } from "@/theme/types";
 import type { Theme } from "@mui/material";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary";
-import type { FetchUserAttributesOutput } from "aws-amplify/auth";
-import { fetchUserAttributes, signOut } from "aws-amplify/auth";
+import { fetchAuthSession, fetchUserAttributes, signOut } from "aws-amplify/auth";
 import { currentUserAtom } from "@/store/store";
 
 interface PageContainerProps {
@@ -74,6 +79,7 @@ const Layout = (props: LayoutProps): JSX.Element => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotification, setShowNotifications] = useState(false);
   const unreadCount = notifications.filter((notif) => !notif.seen).length;
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const router = useRouter();
   const currentURL = router.asPath;
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
@@ -81,8 +87,15 @@ const Layout = (props: LayoutProps): JSX.Element => {
   useEffect(() => {
     fetchUserAttributes()
       .then((user) => {
-        console.log("currentUser", user);
-        setCurrentUser(user); // Update the atom with fetched user data
+        setCurrentUser(user);
+        console.log("user", user);
+      })
+      .catch((error) => {
+        console.error("Error fetching user:", error);
+      });
+    fetchAuthSession()
+      .then((user) => {
+        console.log("fetchAuthSession", user);
       })
       .catch((error) => {
         console.error("Error fetching user:", error);
@@ -153,7 +166,7 @@ const Layout = (props: LayoutProps): JSX.Element => {
 
   return (
     <>
-      {true && (
+      {!matches && (
         <Fab
           color="error"
           sx={{
@@ -194,7 +207,8 @@ const Layout = (props: LayoutProps): JSX.Element => {
                 item
                 xs={1}
                 sx={{
-                  height: 40,
+                  // ml: matches ? 2 : 0,
+                  height: matches ? 30 : 50,
                   display: "flex",
                   alignItems: "center", // Center vertically
                   justifyContent: "center", // Center horizontally
@@ -206,7 +220,7 @@ const Layout = (props: LayoutProps): JSX.Element => {
                     height: "80%",
                     objectFit: "contain",
                     display: "block",
-                    marginLeft: theme.spacing(2),
+                    marginLeft: theme.spacing(5),
                     marginRight: "auto",
                   }}
                   alt="WePrep logo"
@@ -277,7 +291,22 @@ const Layout = (props: LayoutProps): JSX.Element => {
                 <Typography variant="subtitle2" color={theme.palette.primary.main}>
                   {currentUser?.given_name} {currentUser?.family_name}
                 </Typography>
-                <LightDarkSwitchBtn />
+                <Box
+                  sx={{
+                    "& > :first-child": {
+                      // Targeting the first child directly which should be LightDarkSwitchBtn
+                      marginRight: matches ? -3 : 0, // Applying negative margin to move it more to the left
+                    },
+                    // paddingRight: 2,
+                  }}
+                >
+                  <LightDarkSwitchBtn />
+                </Box>
+                {matches && (
+                  <IconButton size="small" onClick={logout}>
+                    <Logout sx={{ fill: "#FF0000" }} />
+                  </IconButton>
+                )}
               </Grid>
             </Grid>
           </AppBar>

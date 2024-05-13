@@ -11,6 +11,8 @@ import {
   IconButton,
   useTheme,
   Chip,
+  Avatar,
+  Box,
 } from "@mui/material";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -30,6 +32,7 @@ export interface VideoData {
   srt_tr: boolean;
   srt_ar: boolean;
   srt_de: boolean;
+  thumbnail_url: string;
 
   // Added properties specific to processed videos
   name: string; // name of the video without the file extension
@@ -107,6 +110,7 @@ const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
         <Table stickyHeader aria-label="videos table">
           <TableHead>
             <TableRow>
+              <TableCell sx={{ bgcolor: theme.palette.info.main }}></TableCell>
               <TableCell sx={{ bgcolor: theme.palette.info.main }}>Name</TableCell>
               <TableCell sx={{ bgcolor: theme.palette.info.main }}>File Type</TableCell>
               <TableCell sx={{ bgcolor: theme.palette.info.main }}>Upload Time</TableCell>
@@ -121,6 +125,16 @@ const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
           <TableBody>
             {data.map((video, index) => (
               <TableRow hover key={index} sx={{ "& > *": { bgcolor: theme.palette.info.light } }}>
+                <TableCell>
+                  <Box sx={{ position: "relative", width: 80, height: 80 }}>
+                    <Avatar
+                      variant="square"
+                      src={video.thumbnail_url} // Ideally, you would use session.imgUrl or a relevant image URL
+                      alt={video.name} // Ideally, you would use session.name
+                      sx={{ width: "100%", height: "100%" }}
+                    />
+                  </Box>
+                </TableCell>
                 <TableCell>{video.name}</TableCell>
                 <TableCell>{video.fileType}</TableCell>
                 <TableCell>{video.time}</TableCell>

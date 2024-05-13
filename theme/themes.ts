@@ -31,13 +31,13 @@ const commonTypography = {
   h2: {
     letterSpacing: "-.025em",
     fontWeight: 700,
-    fontSize: "2.25rem",
+    fontSize: "2.05rem",
     lineHeight: 2.5,
   },
   h3: {
     fontWeight: 500,
-    fontSize: "1.25rem",
-    lineHeight: 1.75,
+    fontSize: "1.65rem",
+    lineHeight: 2,
   },
   body1: {
     fontSize: "1rem",

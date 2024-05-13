@@ -3,14 +3,17 @@ import type { AwsVideo } from "@/pages/dashboard";
 
 export const formatDate = (dateTimeStr: string) => {
   const date = new Date(dateTimeStr);
+  date.setHours(date.getHours() + 3); // Add 3 hours to the date object
+
   const options: Intl.DateTimeFormatOptions = {
-    hour: "2-digit", // Correctly typed as '2-digit' instead of string
-    minute: "2-digit", // Correctly typed as '2-digit' instead of string
-    hour12: true, // Correctly typed as boolean
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   };
+
   return {
-    date: date.toLocaleDateString("en-US"), // Assuming 'en-US' or choose appropriate locale
-    time: date.toLocaleTimeString("en-US", options).toUpperCase(), // Convert to upper case for AM/PM
+    date: date.toLocaleDateString("en-US"),
+    time: date.toLocaleTimeString("en-US", options).toUpperCase(),
   };
 };
 

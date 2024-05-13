@@ -7,6 +7,7 @@ import {
   Snackbar,
   Typography,
   circularProgressClasses,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import type { VideoData } from "@/components/Tables/VideosTable";
@@ -35,23 +36,27 @@ export interface AwsVideo {
 }
 
 const DashboardPage: React.FC = (): JSX.Element => {
+  const theme = useTheme();
   const [openModel, setOpenModel] = useState<boolean>(false);
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
   const [videosList, setVideosList] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pooling, setPooling] = useState<boolean>(false);
   const [currentUser] = useAtom(currentUserAtom);
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const theme = useTheme();
   const snackbar = useSnackbar();
 
   const handleOpen = (): void => setOpenModel(true);
 
-  const handleClose = (): void => {
+  const handleClose = (updated: boolean): void => {
     setOpenModel(false);
     setTimeout(() => {
       fetchVideosList();
     }, 3500);
+    if (updated) {
+      setPooling(true);
+    }
   };
 
   useEffect(() => {
@@ -88,7 +93,6 @@ const DashboardPage: React.FC = (): JSX.Element => {
   const fetchVideosList = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      console.log("currentUser sub =", currentUser);
       const response = await axios.get(VIDEOS_PATH, {
         params: { user_id: currentUser?.sub },
       });
@@ -105,6 +109,8 @@ const DashboardPage: React.FC = (): JSX.Element => {
           languages: getLanguageFullForm(video.languages),
         };
       });
+
+      console.log("processedVideos =", processedVideos);
 
       const allProcessedNew = processedVideos.every(
         (video: VideoData) => video.status === "Analyzed"
@@ -128,7 +134,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <Typography variant="h2" align="center" gutterBottom>
+      <Typography variant={matches ? "h3" : "h2"} align="center" gutterBottom sx={{ mt: 2 }}>
         Welcome {currentUser?.given_name} 👋
       </Typography>
       <Box
@@ -140,7 +146,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
         }}
       >
         <Button
-          size="large"
+          size={matches ? "small" : "large"}
           variant="contained"
           sx={{ textTransform: "none", height: "fit-content" }}
           startIcon={<PlayCircle style={{ fill: "#fff" }} />}

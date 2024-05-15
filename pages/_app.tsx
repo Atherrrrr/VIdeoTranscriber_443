@@ -25,7 +25,7 @@ const App: FC<MUIAppProps> = ({ Component, pageProps, emotionCache }) => {
     const handleRouteChange = (url: string) => {
       // List of defined routes
       const pathname = new URL(url, window.location.href).pathname;
-      const definedRoutes = ["/", "/dashboard", "/video"];
+      const definedRoutes = ["/dashboard", "/video"];
       const isVideoRoute = pathname.startsWith("/video");
       if (!definedRoutes.includes(pathname) && !isVideoRoute) {
         console.log("url", url);

@@ -288,6 +288,7 @@ const VideoPage: React.FC = (): JSX.Element => {
               <Box sx={{ width: "100%", position: "relative", paddingTop: "56.25%" }}>
                 <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
                   <ReactPlayer
+                    key={subtitlesLang}
                     width="100%"
                     height="100%"
                     style={{ objectFit: "cover", borderRadius: "15px" }}

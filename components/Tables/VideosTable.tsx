@@ -17,7 +17,7 @@ import {
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useRouter } from "next/router";
-import { AutorenewOutlined, CheckCircleOutlineOutlined } from "@mui/icons-material";
+import { AutorenewOutlined, CheckCircleOutlineOutlined, EditOutlined } from "@mui/icons-material";
 
 export interface VideoData {
   user_id: string;
@@ -45,8 +45,9 @@ export interface VideoData {
 interface VideosTableProps {
   data: VideoData[];
   onDelete: (videoId: string) => Promise<void>;
+  onEdit: (videoId: string, fileName: string) => void;
 }
-const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
+const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete, onEdit }) => {
   const theme = useTheme();
   const router = useRouter();
 
@@ -86,11 +87,11 @@ const VideosTable: React.FC<VideosTableProps> = ({ data, onDelete }) => {
 
   const renderActions = (video: VideoData) => (
     <>
-      {/* <Tooltip title="Edit" placement="top" arrow>
-        <IconButton onClick={() => console.log("Edit")}>
-          <EditOutlinedIcon sx={{ fill: "#006FEE" }} />
+      <Tooltip title="Edit" placement="top" arrow>
+        <IconButton onClick={() => onEdit(video.video_id, video.file_name)}>
+          <EditOutlined sx={{ fill: "#006FEE" }} />
         </IconButton>
-      </Tooltip> */}
+      </Tooltip>
       <Tooltip title="Delete" placement="top" arrow>
         <IconButton onClick={() => onDelete(video.video_id)}>
           <DeleteOutlinedIcon sx={{ fill: "#EE0000" }} />

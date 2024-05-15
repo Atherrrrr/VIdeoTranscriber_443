@@ -16,17 +16,20 @@ import {
 } from "@mui/material";
 import LANGUAGE_DICTIONARY from "@/dataClasses/LanguageDictionary"; // Assuming this import path
 import axios from "axios";
-import { VIDEO_PATH } from "@/hooks/Apihelper";
+import { VIDEOS_PATH, VIDEO_PATH } from "@/hooks/Apihelper";
 import { useSnackbar } from "@/store/snackbar";
 import { CheckCircle, CloudUpload } from "@mui/icons-material";
 import { accessTokenAtom } from "@/store/store";
 import { useAtom } from "jotai";
+import type { AwsVideo } from "@/pages/dashboard";
 
 interface VideoUploadModalProps {
   open: boolean;
-  handleClose: (updated: boolean) => void;
+  handleClose: () => void;
   userId: string | undefined;
 }
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   open,
@@ -67,12 +70,12 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     setSubtitleLangs(newLangs);
   };
 
-  const onClose = (updated: boolean) => {
+  const onClose = () => {
     // Clear form values
     setVideoName("");
     setFile(null);
     setSubtitleLangs(["en"]);
-    handleClose(updated);
+    handleClose();
   };
 
   const handleSubmit = async () => {
@@ -100,7 +103,8 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
       );
 
       const uploadUrl = response.data.url;
-      console.log("Upload URL = ", uploadUrl);
+      const videoId = response.data.video_id;
+      console.log("Upload response.data = ", response.data);
 
       if (uploadUrl) {
         const fileUploadResponse = await axios.put(uploadUrl, file, {
@@ -108,8 +112,8 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
         });
 
         if (fileUploadResponse.status === 200) {
+          await checkForVideoId(videoId);
           snackbar("success", "Video uploaded successfully.");
-          onClose(true);
         } else {
           snackbar("error", "Failed to upload video. Please try again later.");
         }
@@ -119,10 +123,38 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     } catch (error) {
       console.error("Error during video upload:", error);
       snackbar("error", "Failed to upload video. Please try again later.");
-      onClose(false);
+      onClose();
     }
 
     setIsUploading(false); // End uploading
+  };
+
+  const checkForVideoId = async (videoId: string): Promise<void> => {
+    let videoFound = false;
+
+    try {
+      while (!videoFound) {
+        const response = await axios.get(VIDEOS_PATH, {
+          params: { user_id: userId },
+          headers: {
+            Authorization: `${accessToken}`,
+          },
+        });
+
+        videoFound = response.data.body.some((video: AwsVideo) => video.video_id === videoId);
+
+        if (!videoFound) {
+          // console.log("Video not found, checking again in 2 seconds...");
+          await sleep(2000); // Wait for 2 seconds before checking again
+        }
+      }
+      onClose();
+      console.log("Video Added!");
+      return;
+    } catch (error) {
+      console.error("Error checking for video ID:", error);
+      // Handle error accordingly, e.g., display a message or retry logic
+    }
   };
 
   const style = {
@@ -141,9 +173,6 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   return (
     <Modal
       open={open}
-      // onClick={() => {
-
-      // }} // Fixed typo in "this"onClose(false)}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -227,7 +256,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
               <Button
                 variant="contained"
                 onClick={() => {
-                  onClose(false);
+                  onClose();
                 }}
                 sx={{ mr: 1 }}
               >

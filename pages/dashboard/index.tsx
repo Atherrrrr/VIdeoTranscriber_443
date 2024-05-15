@@ -20,6 +20,7 @@ import { VideoUploadModal } from "@/components/models/VideoUploadModel";
 import { determineStatus, formatDate, getLanguageFullForm } from "@/utils/VideoProcessers";
 import { useAtom } from "jotai";
 import { accessTokenAtom, currentUserAtom } from "@/store/store";
+import { EditVideoModel } from "@/components/models/EditVideoModel";
 
 export interface AwsVideo {
   user_id: string;
@@ -37,27 +38,25 @@ export interface AwsVideo {
 
 const DashboardPage: React.FC = (): JSX.Element => {
   const theme = useTheme();
-  const [openModel, setOpenModel] = useState<boolean>(false);
+  const [openModelVideo, setOpenModelVideo] = useState<boolean>(false);
+  const [openModelEdit, setOpenModelEdit] = useState<boolean>(false);
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
   const [videosList, setVideosList] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pooling, setPooling] = useState<boolean>(false);
+  const [editVideoId, setEditVideoId] = useState<string>();
+  const [editVideoFileName, setEditVideoFileName] = useState<string>();
   const [currentUser] = useAtom(currentUserAtom);
   const [accessToken] = useAtom(accessTokenAtom);
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const snackbar = useSnackbar();
 
-  const handleOpen = (): void => setOpenModel(true);
+  const handleOpen = (): void => setOpenModelVideo(true);
 
-  const handleClose = (updated: boolean): void => {
-    setOpenModel(false);
-    setTimeout(() => {
-      fetchVideosList();
-    }, 3500);
-    if (updated) {
-      setPooling(true);
-    }
+  const handleCloseAdd = (): void => {
+    setOpenModelVideo(false);
+    fetchVideosList();
   };
 
   useEffect(() => {
@@ -71,6 +70,17 @@ const DashboardPage: React.FC = (): JSX.Element => {
 
   const closeSnackbar = (): void => {
     setOpenSnackBar(false);
+  };
+
+  const onEdit = (videoId: string, fileName: string) => {
+    setEditVideoFileName(fileName);
+    setEditVideoId(videoId);
+    setOpenModelEdit(true);
+  };
+
+  const handleCloseEdit = (): void => {
+    fetchVideosList(true);
+    setOpenModelEdit(false);
   };
 
   const onDelete = async (videoId: string) => {
@@ -95,7 +105,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
     }
   }, [currentUser]);
 
-  const fetchVideosList = async (): Promise<void> => {
+  const fetchVideosList = async (forceUpdate = false): Promise<void> => {
     setIsLoading(true);
     try {
       const response = await axios.get(VIDEOS_PATH, {
@@ -128,7 +138,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
       let bothEqual = processedVideos.length === videosList.length;
       bothEqual = bothEqual && allProcessedNew === allProcessedOld;
 
-      if (!bothEqual) {
+      if (!bothEqual || forceUpdate) {
         setVideosList(processedVideos);
         setPooling(!allProcessedNew);
       }
@@ -165,10 +175,17 @@ const DashboardPage: React.FC = (): JSX.Element => {
       </Box>
 
       <VideoUploadModal
-        open={openModel}
-        handleClose={handleClose}
+        open={openModelVideo}
+        handleClose={handleCloseAdd}
         userId={currentUser?.sub}
       ></VideoUploadModal>
+
+      <EditVideoModel
+        open={openModelEdit}
+        handleClose={handleCloseEdit}
+        videoId={editVideoId}
+        fileName={editVideoFileName}
+      ></EditVideoModel>
 
       <div>
         {isLoading && videosList.length < 1 ? (
@@ -185,7 +202,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
             />
           </Box>
         ) : (
-          videosList && <VideosTable data={videosList} onDelete={onDelete} />
+          videosList && <VideosTable data={videosList} onDelete={onDelete} onEdit={onEdit} />
         )}
       </div>
       <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={closeSnackbar}>

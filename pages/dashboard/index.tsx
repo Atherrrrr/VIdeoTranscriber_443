@@ -116,6 +116,12 @@ const DashboardPage: React.FC = (): JSX.Element => {
       });
 
       const processedVideos = response.data.body.map((video: AwsVideo) => {
+        if (video.languages == "") {
+          video.languages = "en";
+        } else {
+          video.languages += ", en";
+        }
+
         const { date, time } = formatDate(video.time_stamp);
         return {
           ...video,

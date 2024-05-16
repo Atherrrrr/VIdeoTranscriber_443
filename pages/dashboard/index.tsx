@@ -116,7 +116,7 @@ const DashboardPage: React.FC = (): JSX.Element => {
       });
 
       const processedVideos = response.data.body.map((video: AwsVideo) => {
-        if (video.languages == "") {
+        if (video.languages === "") {
           video.languages = "en";
         } else {
           video.languages += ", en";

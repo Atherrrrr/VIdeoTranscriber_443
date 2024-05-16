@@ -255,6 +255,38 @@ const VideoPage: React.FC = (): JSX.Element => {
     }
   };
 
+  const downloadSubtitles = async () => {
+    const subtitlesUrl = subtitlesUrlMap[subtitlesLang];
+    if (!subtitlesUrl) {
+      snackbar("error", "No subtitles URL found.");
+      return;
+    }
+
+    try {
+      const response = await fetch(subtitlesUrl);
+      if (!response.ok) throw new Error("Network response was not ok.");
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const subtitlesFileName = `${fileName}_${subtitlesLang}.vtt`;
+
+      // Create a temporary anchor element to initiate download
+      const downloadLink = document.createElement("a");
+      downloadLink.href = downloadUrl;
+      downloadLink.download = subtitlesFileName;
+
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      // Clean up the URL object
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Failed to fetch subtitles for download:", error);
+      snackbar("error", "Failed to download subtitles. Please try again.");
+    }
+  };
+
   return (
     <>
       <Box sx={{ position: "relative", minHeight: "100vh" }}>
@@ -319,6 +351,14 @@ const VideoPage: React.FC = (): JSX.Element => {
                 sx={{ mb: 2, width: "100%" }}
               >
                 Download Video
+              </Button>
+              <Button
+                variant="contained"
+                onClick={downloadSubtitles}
+                startIcon={<Subtitles />}
+                sx={{ mb: 2, width: "100%" }}
+              >
+                Download Subtitles
               </Button>
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="language-select-label">Subtitle Language</InputLabel>
